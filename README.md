@@ -5,5 +5,11 @@ against an answer key built from the postings' own fields.
 
 Early stage: see [docs/PLAN.md](docs/PLAN.md).
 
+```sh
+uv sync
+uv run pytest -q
+uv run python -m job_search.snapshot --limit 10000   # dated snapshot in data/snapshots/
+```
+
 Job data from [Himalayas](https://himalayas.app); every result links to the
 original posting.
