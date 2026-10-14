@@ -1,0 +1,76 @@
+{
+  "overall": {
+    "queries": 1464,
+    "precision@10": 0.1809,
+    "ndcg@10": 0.196,
+    "recall@100": 0.1757
+  },
+  "slices": {
+    "constraints=2": {
+      "queries": 391,
+      "precision@10": 0.2549,
+      "ndcg@10": 0.2783,
+      "recall@100": 0.1609
+    },
+    "constraints=3": {
+      "queries": 660,
+      "precision@10": 0.1685,
+      "ndcg@10": 0.1816,
+      "recall@100": 0.1659
+    },
+    "constraints=4": {
+      "queries": 413,
+      "precision@10": 0.1308,
+      "ndcg@10": 0.141,
+      "recall@100": 0.1995
+    },
+    "field=category": {
+      "queries": 996,
+      "precision@10": 0.1731,
+      "ndcg@10": 0.1882,
+      "recall@100": 0.2011
+    },
+    "field=country": {
+      "queries": 974,
+      "precision@10": 0.1667,
+      "ndcg@10": 0.1809,
+      "recall@100": 0.1755
+    },
+    "field=employment_type": {
+      "queries": 820,
+      "precision@10": 0.1682,
+      "ndcg@10": 0.1804,
+      "recall@100": 0.181
+    },
+    "field=salary_min_usd": {
+      "queries": 691,
+      "precision@10": 0.1824,
+      "ndcg@10": 0.1982,
+      "recall@100": 0.1574
+    },
+    "field=seniority": {
+      "queries": 933,
+      "precision@10": 0.161,
+      "ndcg@10": 0.1732,
+      "recall@100": 0.171
+    },
+    "style=casual": {
+      "queries": 497,
+      "precision@10": 0.1769,
+      "ndcg@10": 0.1929,
+      "recall@100": 0.1856
+    },
+    "style=keywords": {
+      "queries": 471,
+      "precision@10": 0.1779,
+      "ndcg@10": 0.1904,
+      "recall@100": 0.1633
+    },
+    "style=sentence": {
+      "queries": 496,
+      "precision@10": 0.1879,
+      "ndcg@10": 0.2044,
+      "recall@100": 0.1769
+    }
+  }
+}

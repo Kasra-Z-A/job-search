@@ -11,6 +11,10 @@ dependencies = [
     "anthropic>=1.13.0",
     "httpx>=0.28.1",
     "lingua-language-detector>=2.2.0",
+    "numpy>=2.5.4",
+    "openai>=3.31.0",
+    "rank-bm25>=0.2.2",
+    "snowballstemmer>=3.1.1",
 ]
 
 [build-system]

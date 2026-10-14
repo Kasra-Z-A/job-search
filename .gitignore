@@ -12,3 +12,4 @@ data/snapshots/.*
 data/normalised/
 data/eval/raw/.*
 data/runs/
+data/embeddings/
