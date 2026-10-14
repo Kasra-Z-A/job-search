@@ -9,3 +9,4 @@ __pycache__/
 # Snapshot data stays local; the manifests (with sha256) are committed.
 data/snapshots/*.jsonl.gz
 data/snapshots/.*
+data/normalised/
