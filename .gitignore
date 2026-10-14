@@ -11,3 +11,4 @@ data/snapshots/*.jsonl.gz
 data/snapshots/.*
 data/normalised/
 data/eval/raw/.*
+data/runs/
