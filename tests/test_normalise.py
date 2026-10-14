@@ -6,6 +6,7 @@ import httpx
 import pytest
 
 from job_search.normalise import (
+    detect_languages,
     fetch_ecb_rates,
     html_to_text,
     normalise_job,
@@ -135,4 +136,13 @@ def test_normalise_snapshot_writes_records_and_summary(tmp_path):
 def test_normalise_snapshot_refuses_a_modified_snapshot(tmp_path):
     snapshot, fx = write_snapshot(tmp_path, [raw_job()], sha="0" * 64)
     with pytest.raises(ValueError, match="sha256"):
-        normalise_snapshot(snapshot, tmp_path / "out", fx)
+        normalise_snapshot(snapshot, tmp_path / "out", fx, detect=lambda texts: ["en"] * len(texts))
+
+
+def test_detect_languages_tells_english_from_others():
+    texts = [
+        "We are looking for a senior data engineer to build our pipelines.",
+        "Wir suchen eine erfahrene Datenanalystin für unser Team in Berlin.",
+        "Buscamos un desarrollador con experiencia en Python y bases de datos.",
+    ]
+    assert detect_languages(texts) == ["en", "de", "es"]

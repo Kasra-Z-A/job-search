@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.1",
+    "lingua-language-detector>=2.2.0",
 ]
 
 [build-system]

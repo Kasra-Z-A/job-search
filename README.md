@@ -10,6 +10,7 @@ uv sync
 uv run pytest -q
 uv run python -m job_search.snapshot --limit 10000   # dated snapshot in data/snapshots/
 uv run python -m job_search.normalise data/snapshots/himalayas-2026-10-13.jsonl.gz
+uv run python -m job_search.spotcheck render data/review/seniority-spotcheck-2026-10-13.csv
 ```
 
 Job data from [Himalayas](https://himalayas.app); every result links to the

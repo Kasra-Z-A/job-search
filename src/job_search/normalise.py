@@ -15,6 +15,11 @@ of this module, never the raw API fields. The rules:
 - Categories are Himalayas' top-level categories; an empty list means unknown,
   not "no category".
 - The HTML description becomes plain text with one block per line.
+- Only English jobs are kept. Queries are in English, so a German job that
+  matches a query's fields would be a correct answer an English search can
+  hardly find, and scores would measure language instead of search. The
+  language is detected from the start of the text; dropped jobs are counted
+  by language in the summary.
 
     uv run python -m job_search.normalise data/snapshots/himalayas-2026-10-13.jsonl.gz
 """
@@ -34,6 +39,7 @@ import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
+from typing import Callable
 
 import httpx
 
@@ -46,6 +52,10 @@ MAX_PLAUSIBLE_USD = 1_000_000
 FX_DIR = Path("data/fx")
 OUT_DIR = Path("data/normalised")
 ECB_URL = "https://data-api.ecb.europa.eu/service/data/EXR/D..EUR.SP00.A"
+KEEP_LANGUAGE = "en"
+LANGUAGE_SAMPLE_CHARS = 2000
+
+DetectLanguages = Callable[[list[str]], list[str | None]]
 
 
 # --- exchange rates -------------------------------------------------------
@@ -187,13 +197,31 @@ def verify_snapshot(snapshot: Path) -> None:
         raise ValueError(f"{snapshot} does not match its manifest sha256")
 
 
-def normalise_snapshot(snapshot: Path, out_dir: Path = OUT_DIR, fx_dir: Path = FX_DIR) -> dict:
+def detect_languages(texts: list[str]) -> list[str | None]:
+    """ISO 639-1 code per text, lowercase; None when undetectable."""
+    from lingua import LanguageDetectorBuilder  # slow to import; only needed here
+
+    detector = LanguageDetectorBuilder.from_all_languages().build()
+    found = detector.detect_languages_in_parallel_of(texts)
+    return [lang.iso_code_639_1.name.lower() if lang else None for lang in found]
+
+
+def normalise_snapshot(
+    snapshot: Path,
+    out_dir: Path = OUT_DIR,
+    fx_dir: Path = FX_DIR,
+    detect: DetectLanguages = detect_languages,
+) -> dict:
     verify_snapshot(snapshot)
     date = snapshot_date(snapshot)
     per_eur = load_or_fetch_rates(date, fx_dir)
 
     with gzip.open(snapshot, "rt", encoding="utf-8") as f:
-        jobs = [normalise_job(json.loads(line), per_eur) for line in f]
+        all_jobs = [normalise_job(json.loads(line), per_eur) for line in f]
+
+    languages = detect([job["text"][:LANGUAGE_SAMPLE_CHARS] for job in all_jobs])
+    jobs = [{**job, "language": lang} for job, lang in zip(all_jobs, languages) if lang == KEEP_LANGUAGE]
+    dropped = collections.Counter(str(lang) for lang in languages if lang != KEEP_LANGUAGE)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     out = out_dir / snapshot.name
@@ -201,7 +229,7 @@ def normalise_snapshot(snapshot: Path, out_dir: Path = OUT_DIR, fx_dir: Path = F
         for job in jobs:
             gz.write((json.dumps(job, ensure_ascii=False) + "\n").encode())
 
-    return {"output": str(out), **summarise(jobs)}
+    return {"output": str(out), "dropped_non_english": dict(dropped.most_common()), **summarise(jobs)}
 
 
 def summarise(jobs: list[dict]) -> dict:
