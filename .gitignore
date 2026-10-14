@@ -10,3 +10,4 @@ __pycache__/
 data/snapshots/*.jsonl.gz
 data/snapshots/.*
 data/normalised/
+data/eval/raw/.*
