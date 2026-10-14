@@ -1,8 +1,13 @@
 """Search systems. Each one ranks the snapshot's jobs for every evaluation
-query and writes a run file for `job_search.evaluate`."""
+query and writes a run file for `job_search.evaluate`.
+
+Query sets live in `data/eval/<set>-<date>.jsonl`: `queries` is the main
+set; others (such as `sloppy`) reuse its specs with different wording. A run
+on another set is named `<system>.<set>-<date>.jsonl`."""
 
 from __future__ import annotations
 
+import argparse
 import gzip
 import json
 from pathlib import Path
@@ -16,8 +21,20 @@ def load_jobs(normalised: Path) -> list[dict]:
         return [json.loads(line) for line in f]
 
 
-def load_queries(normalised: Path) -> list[dict]:
-    path = Path("data/eval") / f"queries-{snapshot_date(normalised)}.jsonl"
+MAIN_SET = "queries"
+
+
+def add_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("normalised", type=Path)
+    parser.add_argument("--queries", default=MAIN_SET, help="query set name in data/eval/")
+
+
+def run_name(system: str, query_set: str) -> str:
+    return system if query_set == MAIN_SET else f"{system}.{query_set}"
+
+
+def load_queries(normalised: Path, query_set: str = MAIN_SET) -> list[dict]:
+    path = Path("data/eval") / f"{query_set}-{snapshot_date(normalised)}.jsonl"
     with path.open(encoding="utf-8") as f:
         return [json.loads(line) for line in f]
 

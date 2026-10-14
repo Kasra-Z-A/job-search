@@ -24,7 +24,7 @@ from openai import OpenAI
 
 from job_search.evaluate import DEPTH
 from job_search.normalise import snapshot_date
-from job_search.systems import job_text, load_jobs, load_queries, write_run
+from job_search.systems import add_arguments, job_text, load_jobs, load_queries, run_name, write_run
 
 MODEL = "text-embedding-3-small"
 PRICE_PER_MILLION = 0.02
@@ -65,12 +65,12 @@ def rank(job_vectors: np.ndarray, query_vectors: np.ndarray, job_ids: list[str],
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("normalised", type=Path)
+    add_arguments(parser)
     args = parser.parse_args(argv)
 
     date = snapshot_date(args.normalised)
     jobs = load_jobs(args.normalised)
-    queries = load_queries(args.normalised)
+    queries = load_queries(args.normalised, args.queries)
     client = OpenAI()
 
     job_ids = [j["id"] for j in jobs]
@@ -78,12 +78,12 @@ def main(argv: list[str] | None = None) -> None:
         client, job_ids, [job_text(j)[:MAX_CHARS] for j in jobs], CACHE_DIR / f"{MODEL}-jobs-{date}.npz")
     query_vectors, query_tokens = cached_embed(
         client, [q["spec_id"] for q in queries], [q["query"] for q in queries],
-        CACHE_DIR / f"{MODEL}-queries-{date}.npz")
+        CACHE_DIR / f"{MODEL}-{args.queries}-{date}.npz")
     tokens = job_tokens + query_tokens
     print(f"embedded {tokens:,} new tokens, ${tokens * PRICE_PER_MILLION / 1e6:.2f}", file=sys.stderr)
 
     rankings = dict(zip([q["spec_id"] for q in queries], rank(job_vectors, query_vectors, job_ids)))
-    print(write_run("embeddings", args.normalised, rankings))
+    print(write_run(run_name("embeddings", args.queries), args.normalised, rankings))
 
 
 if __name__ == "__main__":

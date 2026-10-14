@@ -16,7 +16,7 @@ from pathlib import Path
 
 from job_search.evaluate import DEPTH, RUNS_DIR
 from job_search.normalise import snapshot_date
-from job_search.systems import write_run
+from job_search.systems import add_arguments, run_name, write_run
 
 K = 60
 SOURCES = ["bm25", "embeddings"]
@@ -38,13 +38,13 @@ def load_run(path: Path) -> dict[str, list[str]]:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("normalised", type=Path)
+    add_arguments(parser)
     args = parser.parse_args(argv)
 
     date = snapshot_date(args.normalised)
-    runs = [load_run(RUNS_DIR / f"{name}-{date}.jsonl") for name in SOURCES]
+    runs = [load_run(RUNS_DIR / f"{run_name(name, args.queries)}-{date}.jsonl") for name in SOURCES]
     rankings = {spec_id: fuse([run[spec_id] for run in runs]) for spec_id in runs[0]}
-    print(write_run("hybrid", args.normalised, rankings))
+    print(write_run(run_name("hybrid", args.queries), args.normalised, rankings))
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ import snowballstemmer
 from rank_bm25 import BM25Okapi
 
 from job_search.evaluate import DEPTH
-from job_search.systems import job_text, load_jobs, load_queries, write_run
+from job_search.systems import add_arguments, job_text, load_jobs, load_queries, run_name, write_run
 
 STOPWORDS = set("""
 a an and are as at be but by for from has have i i'm im in is it its me my of on or our
@@ -49,17 +49,17 @@ class BM25Search:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("normalised", type=Path)
+    add_arguments(parser)
     args = parser.parse_args(argv)
 
     engine = BM25Search(load_jobs(args.normalised))
-    queries = load_queries(args.normalised)
+    queries = load_queries(args.normalised, args.queries)
     rankings = {}
     for n, q in enumerate(queries, 1):
         rankings[q["spec_id"]] = engine.search(q["query"])
         if n % 250 == 0:
             print(f"  {n}/{len(queries)} queries", file=sys.stderr)
-    print(write_run("bm25", args.normalised, rankings))
+    print(write_run(run_name("bm25", args.queries), args.normalised, rankings))
 
 
 if __name__ == "__main__":

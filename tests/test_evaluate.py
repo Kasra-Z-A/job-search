@@ -94,3 +94,12 @@ def test_compare_skips_queries_without_recall():
     out = compare(a, b)
     assert out["precision@10"]["difference"] == 1.0
     assert out["recall@100"]["queries"] == 0
+
+
+def test_default_paths_follow_the_query_set_in_the_run_name():
+    from pathlib import Path
+
+    from job_search.evaluate import default_paths
+
+    assert default_paths(Path("data/runs/bm25-2026-10-13.jsonl"))[0].name == "queries-2026-10-13.jsonl"
+    assert default_paths(Path("data/runs/filtered.sloppy-2026-10-13.jsonl"))[0].name == "sloppy-2026-10-13.jsonl"

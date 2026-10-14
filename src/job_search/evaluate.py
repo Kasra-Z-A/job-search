@@ -101,8 +101,11 @@ def load_answer_key(queries_path: Path, normalised_path: Path) -> tuple[list[dic
 
 
 def default_paths(run_path: Path) -> tuple[Path, Path]:
+    """Query set and snapshot for a run named `<system>[.<set>]-<date>.jsonl`."""
     date = snapshot_date(run_path)
-    return EVAL_DIR / f"queries-{date}.jsonl", NORMALISED_DIR / f"himalayas-{date}.jsonl.gz"
+    system = run_path.name[: run_path.name.index(date) - 1]
+    query_set = system.split(".", 1)[1] if "." in system else "queries"
+    return EVAL_DIR / f"{query_set}-{date}.jsonl", NORMALISED_DIR / f"himalayas-{date}.jsonl.gz"
 
 
 def load_run(run_path: Path, queries: list[dict], corpus: set[str]) -> dict[str, list[str]]:

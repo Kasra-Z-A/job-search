@@ -1,0 +1,40 @@
+{"spec_id": "s0003", "style": "sloppy", "constraints": 4, "fields": ["category", "employment_type", "salary_min_usd", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0024", "style": "sloppy", "constraints": 2, "fields": ["category", "country"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0025", "style": "sloppy", "constraints": 4, "fields": ["category", "country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0059", "style": "sloppy", "constraints": 2, "fields": ["category", "salary_min_usd"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0064", "style": "sloppy", "constraints": 4, "fields": ["category", "country", "employment_type", "salary_min_usd"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0068", "style": "sloppy", "constraints": 2, "fields": ["country", "salary_min_usd"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0107", "style": "sloppy", "constraints": 4, "fields": ["category", "country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0142", "style": "sloppy", "constraints": 3, "fields": ["country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0154", "style": "sloppy", "constraints": 3, "fields": ["category", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0169", "style": "sloppy", "constraints": 3, "fields": ["employment_type", "salary_min_usd", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0331", "style": "sloppy", "constraints": 4, "fields": ["category", "country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0342", "style": "sloppy", "constraints": 4, "fields": ["category", "country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0348", "style": "sloppy", "constraints": 2, "fields": ["category", "employment_type"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0360", "style": "sloppy", "constraints": 2, "fields": ["category", "salary_min_usd"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0384", "style": "sloppy", "constraints": 2, "fields": ["country", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0440", "style": "sloppy", "constraints": 3, "fields": ["category", "country", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0580", "style": "sloppy", "constraints": 3, "fields": ["category", "employment_type", "salary_min_usd"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0583", "style": "sloppy", "constraints": 3, "fields": ["category", "country", "employment_type"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0593", "style": "sloppy", "constraints": 3, "fields": ["country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0668", "style": "sloppy", "constraints": 3, "fields": ["category", "country", "salary_min_usd"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0669", "style": "sloppy", "constraints": 3, "fields": ["country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0781", "style": "sloppy", "constraints": 2, "fields": ["country", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0795", "style": "sloppy", "constraints": 4, "fields": ["category", "employment_type", "salary_min_usd", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0820", "style": "sloppy", "constraints": 2, "fields": ["category", "employment_type"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0832", "style": "sloppy", "constraints": 4, "fields": ["category", "country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0835", "style": "sloppy", "constraints": 3, "fields": ["category", "country", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0906", "style": "sloppy", "constraints": 2, "fields": ["salary_min_usd", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0917", "style": "sloppy", "constraints": 3, "fields": ["category", "employment_type", "salary_min_usd"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s0920", "style": "sloppy", "constraints": 3, "fields": ["category", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s0923", "style": "sloppy", "constraints": 3, "fields": ["employment_type", "salary_min_usd", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": null}
+{"spec_id": "s1003", "style": "sloppy", "constraints": 2, "fields": ["country", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s1023", "style": "sloppy", "constraints": 4, "fields": ["category", "country", "salary_min_usd", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s1135", "style": "sloppy", "constraints": 3, "fields": ["category", "salary_min_usd", "seniority"], "precision@10": 0.9, "ndcg@10": 0.905211635630449, "recall@100": 1.0}
+{"spec_id": "s1238", "style": "sloppy", "constraints": 2, "fields": ["category", "country"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s1270", "style": "sloppy", "constraints": 4, "fields": ["category", "country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s1277", "style": "sloppy", "constraints": 3, "fields": ["country", "employment_type", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s1331", "style": "sloppy", "constraints": 3, "fields": ["category", "salary_min_usd", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s1436", "style": "sloppy", "constraints": 3, "fields": ["category", "country", "employment_type"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s1466", "style": "sloppy", "constraints": 3, "fields": ["category", "country", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
+{"spec_id": "s1488", "style": "sloppy", "constraints": 4, "fields": ["category", "country", "salary_min_usd", "seniority"], "precision@10": 1.0, "ndcg@10": 1.0, "recall@100": 1.0}
