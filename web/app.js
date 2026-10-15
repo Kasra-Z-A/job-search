@@ -1,4 +1,4 @@
-// Search UI and evaluation charts for jobs.kasra.page. No framework, no build step.
+// Conversation UI and evaluation charts for jobs.kasra.page. No framework, no build step.
 // All text from the API or results.json goes into the page through textContent.
 
 const $ = (selector) => document.querySelector(selector);
@@ -21,7 +21,7 @@ function svgEl(tag, attrs = {}, text) {
 const money = (usd) => `$${Math.round(usd / 1000)}k`;
 const pct = (x) => `${Math.round(x * 100)}%`;
 
-// --- search ---------------------------------------------------------------
+// --- conversation ---------------------------------------------------------
 
 const FIELD_NAMES = {
   seniority: "level",
@@ -30,14 +30,22 @@ const FIELD_NAMES = {
   employment_type: "contract",
   salary_min_usd: "salary",
 };
+const MAX_CONTEXT_TURNS = 4;
+const STAGES = ["Understanding your request", "Finding matching jobs", "Reading the best matches"];
 
-function filterChips(filters) {
+// What the page sends back with a follow-up: each earlier message, the filters
+// it was understood as, and the jobs picked for it.
+let turns = [];
+
+function filterChips(filters, requireSalary) {
   const chips = [];
   for (const level of filters.seniority) chips.push(level);
   for (const category of filters.categories) chips.push(category);
-  for (const country of filters.countries) chips.push(`open to ${country}`);
+  if (filters.countries.length > 6) chips.push(`open to ${filters.countries.length} countries`);
+  else for (const country of filters.countries) chips.push(`open to ${country}`);
   for (const type of filters.employment_types) chips.push(type);
   if (filters.salary_min_usd) chips.push(`at least ${money(filters.salary_min_usd)} a year`);
+  if (requireSalary) chips.push("salary stated");
   return chips;
 }
 
@@ -64,86 +72,158 @@ function factText(field, job) {
   }
 }
 
-function renderJob(job) {
-  const item = el("li", { class: "job" });
-  const title = el("h3");
-  title.append(el("a", { href: job.id, target: "_blank", rel: "noopener" }, job.title));
-  item.append(title);
-  const posted = new Date(job.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-  item.append(el("p", { class: "meta" }, `${job.company} · posted ${posted}`));
-
-  const facts = el("div", { class: "facts" });
+function facts(job) {
+  const row = el("div", { class: "facts" });
   for (const [field, status] of Object.entries(job.meets)) {
-    facts.append(el("span", { class: `fact ${status}`, title: `${FIELD_NAMES[field]}: ${status === "yes" ? "matches" : "not stated in the posting"}` },
-      factText(field, job)));
+    row.append(el("span", {
+      class: `fact ${status}`,
+      title: `${FIELD_NAMES[field]}: ${status === "yes" ? "matches" : "not stated in the posting"}`,
+    }, factText(field, job)));
   }
   for (const field of ["seniority", "country", "employment_type", "salary_min_usd"]) {
     if (field in job.meets) continue;
     const text = field === "salary_min_usd" ? salary(job) : factText(field, job);
-    if (text && !text.endsWith("not stated")) facts.append(el("span", { class: "fact" }, text));
+    if (text && !text.endsWith("not stated")) row.append(el("span", { class: "fact" }, text));
   }
-  item.append(facts);
-  item.append(el("p", { class: "excerpt" }, job.excerpt));
-  return item;
+  return row;
 }
 
-function renderResults(data) {
-  const understood = $("#understood");
-  understood.replaceChildren(el("span", { class: "label" }, "Understood as"));
-  const chips = filterChips(data.filters);
+function jobTitle(job, tag = "h3") {
+  const title = el(tag);
+  title.append(el("a", { href: job.id, target: "_blank", rel: "noopener" }, job.title));
+  return title;
+}
+
+function posted(job) {
+  return new Date(job.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
+function pickCard(job) {
+  const card = el("li", { class: "job" });
+  card.append(jobTitle(job));
+  card.append(el("p", { class: "meta" }, `${job.company} · posted ${posted(job)}`));
+  card.append(facts(job));
+  if (job.reason) card.append(el("p", { class: "reason" }, job.reason));
+  card.append(el("p", { class: "excerpt" }, job.excerpt));
+  const source = el("p", { class: "source" });
+  source.append(el("a", { href: job.id, target: "_blank", rel: "noopener" }, "View and apply on Himalayas ↗"));
+  card.append(source);
+  return card;
+}
+
+function moreRow(job) {
+  const row = el("li", { class: "more-job" });
+  row.append(jobTitle(job, "h4"));
+  row.append(el("p", { class: "meta" }, `${job.company} · posted ${posted(job)}`));
+  row.append(facts(job));
+  return row;
+}
+
+function renderAnswer(block, data) {
+  block.replaceChildren();
+  const understood = el("div", { class: "understood" });
+  understood.append(el("span", { class: "label" }, "Understood as"));
+  const chips = filterChips(data.filters, data.require_salary);
   if (chips.length === 0) understood.append(el("span", { class: "chip" }, "no filters, ranked by meaning"));
   for (const chip of chips) understood.append(el("span", { class: "chip" }, chip));
+  block.append(understood);
 
-  const seconds = (data.timing.understand_ms + data.timing.embed_ms + data.timing.rank_ms) / 1000;
+  block.append(el("p", { class: "summary" }, data.summary));
   const maybe = data.counts.maybe ? ` · ${data.counts.maybe.toLocaleString()} more might (detail not in the posting)` : "";
-  $("#summary").textContent =
-    `${data.counts.match.toLocaleString()} of ${data.counts.total.toLocaleString()} jobs meet everything${maybe} · ${seconds.toFixed(1)} s`;
+  const ms = Object.values(data.timing).reduce((a, b) => a + b, 0);
+  block.append(el("p", { class: "muted" },
+    `${data.counts.match.toLocaleString()} of ${data.counts.total.toLocaleString()} jobs meet everything${maybe} · ${(ms / 1000).toFixed(1)} s`));
 
-  const list = $("#list");
-  list.replaceChildren(...data.results.map(renderJob));
-  if (data.results.length === 0) list.append(el("li", { class: "muted" }, "No job meets all of that. Try loosening one part."));
-  $("#results").hidden = false;
-}
+  const picks = el("ol", { class: "picks" });
+  picks.append(...data.picks.map(pickCard));
+  block.append(picks);
 
-async function search(query) {
-  const button = $("#search button");
-  const error = $("#error");
-  error.hidden = true;
-  button.disabled = true;
-  button.textContent = "Searching…";
-  try {
-    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || "Search failed.");
-    renderResults(data);
-    history.replaceState(null, "", `?q=${encodeURIComponent(query)}`);
-  } catch (exc) {
-    error.textContent = exc.message === "Failed to fetch" ? "Search is unavailable right now." : exc.message;
-    error.hidden = false;
-  } finally {
-    button.disabled = false;
-    button.textContent = "Search";
+  if (data.more.length) {
+    const more = el("details", { class: "more" });
+    more.append(el("summary", {}, `${data.more.length} more matches`));
+    const list = el("ol");
+    list.append(...data.more.map(moreRow));
+    more.append(list);
+    block.append(more);
   }
 }
 
-$("#search").addEventListener("submit", (event) => {
+function contextParam() {
+  const json = JSON.stringify(turns.slice(-MAX_CONTEXT_TURNS));
+  const bytes = new TextEncoder().encode(json);
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function setComposing(busy) {
+  const button = $("#composer button[type=submit]");
+  button.disabled = busy;
+  $("#q").disabled = busy;
+  button.textContent = busy ? "Working…" : turns.length ? "Send" : "Search";
+}
+
+async function send(message) {
+  const thread = $("#thread");
+  const turn = el("article", { class: "turn" });
+  turn.append(el("p", { class: "user-message" }, message));
+  const block = el("div", { class: "answer" });
+  const stage = el("p", { class: "muted working" }, STAGES[0]);
+  block.append(stage);
+  turn.append(block);
+  thread.append(turn);
+  turn.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  let step = 0;
+  const timer = setInterval(() => { step = Math.min(step + 1, STAGES.length - 1); stage.textContent = STAGES[step]; }, 1800);
+  setComposing(true);
+  try {
+    const url = turns.length
+      ? `/api/followup?q=${encodeURIComponent(message)}&ctx=${contextParam()}`
+      : `/api/search?q=${encodeURIComponent(message)}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Search failed.");
+    renderAnswer(block, data);
+    if (turns.length === 0) history.replaceState(null, "", `?q=${encodeURIComponent(message)}`);
+    turns.push({ q: message, filters: data.filters, picks: data.picks.map((p) => p.id) });
+    $("#examples").hidden = true;
+    $("#new-search").hidden = false;
+    $("#q").placeholder = "Refine it: only full-time, what about Canada, only ones that list pay…";
+  } catch (exc) {
+    block.replaceChildren(el("p", { class: "error" },
+      exc.message === "Failed to fetch" ? "Search is unavailable right now." : exc.message));
+  } finally {
+    clearInterval(timer);
+    setComposing(false);
+    $("#q").value = "";
+    $("#q").focus();
+  }
+}
+
+$("#composer").addEventListener("submit", (event) => {
   event.preventDefault();
-  const query = $("#q").value.trim();
-  if (query.length >= 3) search(query);
+  const message = $("#q").value.trim();
+  if (message.length >= 3) send(message);
 });
 
-for (const button of document.querySelectorAll(".examples button")) {
-  button.addEventListener("click", () => {
-    $("#q").value = button.dataset.q;
-    search(button.dataset.q);
-  });
+$("#new-search").addEventListener("click", () => {
+  turns = [];
+  $("#thread").replaceChildren();
+  $("#examples").hidden = false;
+  $("#new-search").hidden = true;
+  $("#q").placeholder = "e.g. senior data jobs open to people in Germany, at least $90k";
+  setComposing(false);
+  history.replaceState(null, "", window.location.pathname);
+  $("#q").focus();
+});
+
+for (const button of document.querySelectorAll("#examples button")) {
+  button.addEventListener("click", () => send(button.dataset.q));
 }
 
 const initial = new URLSearchParams(window.location.search).get("q");
-if (initial) {
-  $("#q").value = initial;
-  search(initial);
-}
+if (initial) send(initial);
 
 // --- charts ---------------------------------------------------------------
 

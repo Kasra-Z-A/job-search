@@ -27,10 +27,10 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         url = urlparse(self.path)
-        if url.path != "/api/search":
+        if url.path not in ("/api/search", "/api/followup"):
             return super().do_GET()
         params = {k: v[0] for k, v in parse_qs(url.query).items()}
-        result = handle(params, self.searcher, counter=None)
+        result = handle(params, self.searcher, counter=None, followup=url.path == "/api/followup")
         self.send_response(result["statusCode"])
         for name, value in result["headers"].items():
             self.send_header(name, value)

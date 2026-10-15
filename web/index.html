@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Job search in plain language · Kasra</title>
-  <meta name="description" content="Describe the job you want in your own words. An LLM turns it into filters, embeddings rank the rest, and a 1,464-query benchmark measures how well it works.">
+  <meta name="description" content="Ask for the job you want in your own words. An LLM finds matching jobs, explains which fit best and takes follow-ups; a 1,464-query benchmark measures how well the search works.">
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
@@ -13,18 +13,21 @@
     <header>
       <p class="eyebrow"><a href="https://kasra.page">kasra.page</a> · project demo</p>
       <h1>Job search in plain language</h1>
-      <p class="lede">Describe the job you want, the way you would say it. An LLM turns your words into
-        filters, and meaning-based search ranks the jobs that pass. It searches <span id="job-count">9,458</span>
-        remote jobs as of <span id="snapshot-date">13 October 2026</span>.</p>
+      <p class="lede">Ask for the job you want, the way you would say it. An LLM works out what you mean,
+        finds matching jobs among 9,458 remote postings from 13 October 2026, and tells you which fit best and
+        why. Follow up to refine.</p>
     </header>
 
-    <form id="search" role="search">
+    <div id="thread" aria-live="polite"></div>
+
+    <form id="composer" role="search">
       <label for="q" class="visually-hidden">Describe the job you want</label>
       <input id="q" name="q" type="search" minlength="3" maxlength="200" autocomplete="off"
              placeholder="e.g. senior data jobs open to people in Germany, at least $90k" required>
       <button type="submit">Search</button>
+      <button type="button" id="new-search" class="secondary" hidden>New search</button>
     </form>
-    <div class="examples" aria-label="Example searches">
+    <div id="examples" class="examples" aria-label="Example searches">
       <span>Try:</span>
       <button type="button" data-q="senior data science jobs open to people in Germany, at least $90k">senior data science, Germany, $90k+</button>
       <button type="button" data-q="junior developer contract work, I'm based in Canada">junior dev contract, Canada</button>
@@ -33,20 +36,25 @@
       <button type="button" data-q="director or VP of marketing, $180,000 or more">marketing director, $180k+</button>
     </div>
 
-    <section id="results" aria-live="polite" hidden>
-      <div id="understood"></div>
-      <p id="summary" class="muted"></p>
-      <ol id="list"></ol>
-    </section>
-    <p id="error" class="error" role="alert" hidden></p>
-
     <section id="evaluation" class="writeup">
+      <h2>How it works</h2>
+      <ol class="steps">
+        <li><strong>Understand.</strong> Claude Haiku turns your message into filters (level, job family,
+          location, contract, minimum salary). Follow-ups update them.</li>
+        <li><strong>Retrieve.</strong> Jobs that contradict a filter are dropped; the rest are ranked by meaning
+          with OpenAI embeddings. Jobs that do not state a detail stay in, after the sure matches.</li>
+        <li><strong>Answer.</strong> Haiku reads the top 20 and picks the best fits with a reason. The cards,
+          links and facts come from the job data, not from the model, and every amount the model writes is
+          checked against that data.</li>
+      </ol>
+
       <h2>How well does it work?</h2>
       <p>Judging search results usually means reading them by hand. Here the answers are known in advance:
         <span id="query-count">1,464</span> test searches were built from the jobs' own fields (for example
         <em>senior · Developer · open to Canada · at least $140k</em>), rewritten into everyday language by one
         LLM and checked against their fields by another. Every system is scored on the same searches, by
-        <strong>precision@10</strong>: the share of its top ten results that meet everything the search asked for.</p>
+        <strong>precision@10</strong>: the share of its top ten results that meet everything the search asked for.
+        This measures the retrieval step; follow-ups are not part of it.</p>
 
       <figure class="viz-root">
         <figcaption>

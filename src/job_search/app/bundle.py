@@ -3,6 +3,9 @@
 Writes `data/app/<date>/` (gitignored, shipped inside the Lambda package):
 
 - jobs.json.gz: the fields search and display need, plus a short excerpt;
+- texts.bin and text_offsets.npy: the full descriptions, concatenated, and
+  where each starts. The answer step reads only its candidates' descriptions,
+  so starting a container does not parse ~40 MB of text;
 - vectors.npy: job embeddings as float16, half the size, ranking unchanged
   in practice;
 - values.json: allowed categories, countries and employment types for the
@@ -83,6 +86,9 @@ def build(normalised: Path, app_dir: Path = APP_DIR) -> Path:
     with gzip.open(out / "jobs.json.gz", "wt", encoding="utf-8") as f:
         json.dump([slim(j) for j in jobs], f, ensure_ascii=False)
     np.save(out / "vectors.npy", cached["vectors"].astype(np.float16))
+    encoded = [j["text"].encode("utf-8") for j in jobs]
+    (out / "texts.bin").write_bytes(b"".join(encoded))
+    np.save(out / "text_offsets.npy", np.cumsum([0, *map(len, encoded)], dtype=np.int64))
     categories, countries, employment_types = field_values(jobs)
     (out / "values.json").write_text(json.dumps({
         "snapshot": date, "embedding_model": EMBEDDING_MODEL, "categories": categories,
