@@ -1,0 +1,323 @@
+/* The chat: top bar, a scrolling thread, and the composer pinned below. */
+
+.chat-page {
+	height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.chat-page .topbar {
+	position: relative;
+	flex: none;
+}
+
+.scroller {
+	flex: 1;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scroll-behavior: smooth;
+}
+
+.column {
+	width: 100%;
+	max-width: 46rem;
+	margin-inline: auto;
+	padding-inline: var(--gutter);
+}
+
+/* --- empty state --------------------------------------------------------- */
+
+.intro {
+	min-height: calc(100% - 2rem);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 1.1rem;
+	padding-block: 2rem 3rem;
+}
+
+.scroller > .column {
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.intro h1 {
+	font-size: var(--step-h1);
+}
+
+.intro h1 em {
+	color: var(--rust);
+}
+
+.intro__lead {
+	max-width: 34rem;
+	color: var(--ink-soft);
+	font-size: var(--step-lead);
+	line-height: 1.5;
+}
+
+.suggestions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 0.6rem;
+}
+
+/* --- thread -------------------------------------------------------------- */
+
+.thread {
+	list-style: none;
+	margin: 0;
+	padding: 1rem 0 2rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.75rem;
+}
+
+.thread:empty {
+	display: none;
+}
+
+.msg-user {
+	align-self: flex-end;
+	max-width: 85%;
+	padding: 0.65rem 1.05rem;
+	border-radius: 1.25rem 1.25rem 0.35rem 1.25rem;
+	background: var(--ink);
+	color: var(--paper);
+	line-height: 1.45;
+	overflow-wrap: anywhere;
+}
+
+.msg-bot {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+}
+
+.msg-bot__who {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--rust);
+	flex: none;
+}
+
+.msg-bot--working .dot {
+	animation: pulse 1.1s var(--ease) infinite;
+}
+
+@keyframes pulse {
+	0%, 100% { opacity: 1; transform: scale(1); }
+	50% { opacity: 0.35; transform: scale(0.75); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.msg-bot--working .dot { animation: none; }
+	.scroller { scroll-behavior: auto; }
+}
+
+.msg-bot__text {
+	color: var(--ink);
+	line-height: 1.6;
+}
+
+.msg-bot__error {
+	color: var(--rust);
+}
+
+.understood {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.understood .label {
+	margin-right: 0.25rem;
+}
+
+/* --- jobs inside a reply -------------------------------------------------- */
+
+.jobs {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border-top: 1px solid var(--line);
+}
+
+.jobitem {
+	display: grid;
+	grid-template-columns: 2.1rem 1fr;
+	gap: 0 0.5rem;
+	padding: 0.95rem 0;
+	border-bottom: 1px solid var(--line);
+}
+
+.jobitem__n {
+	padding-top: 0.2rem;
+}
+
+.jobitem__title {
+	font-family: "Inter Variable", system-ui, sans-serif;
+	font-size: 1rem;
+	font-weight: 600;
+	line-height: 1.35;
+	letter-spacing: 0;
+}
+
+.jobitem__title a {
+	text-decoration: none;
+	transition: color 0.25s var(--ease);
+}
+
+.jobitem__title a:hover {
+	color: var(--rust);
+}
+
+.jobitem__title a::after {
+	content: " ↗";
+	color: var(--muted);
+	font-weight: 400;
+}
+
+.jobitem__meta {
+	margin-top: 0.15rem;
+	font-size: var(--step-small);
+	color: var(--muted);
+}
+
+.jobitem__reason {
+	margin-top: 0.4rem;
+	font-size: 0.95rem;
+	color: var(--ink-soft);
+	line-height: 1.5;
+}
+
+.jobitem__checks {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin-top: 0.55rem;
+}
+
+.check--yes::before {
+	content: "✓";
+	color: var(--good);
+	font-weight: 700;
+}
+
+.check--unknown {
+	border-style: dashed;
+	color: var(--muted);
+}
+
+.check--unknown::before {
+	content: "?";
+	font-weight: 700;
+}
+
+.more-toggle {
+	align-self: flex-start;
+	padding: 0;
+	border: 0;
+	background: none;
+	cursor: pointer;
+	color: var(--ink-soft);
+	border-bottom: 1px solid var(--line);
+	transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+
+.more-toggle:hover {
+	color: var(--ink);
+	border-color: var(--rust);
+}
+
+.jobs--more .jobitem {
+	padding: 0.7rem 0;
+}
+
+.msg-bot__foot {
+	margin-top: -0.2rem;
+}
+
+/* --- composer ------------------------------------------------------------ */
+
+.composer-bar {
+	flex: none;
+	padding: 0.5rem 0 max(0.9rem, env(safe-area-inset-bottom));
+	background: linear-gradient(to bottom, transparent, var(--paper) 1.2rem);
+}
+
+.composer {
+	display: flex;
+	align-items: flex-end;
+	gap: 0.5rem;
+}
+
+.composer textarea {
+	flex: 1;
+	min-height: 3.1rem;
+	max-height: 9rem;
+	resize: none;
+	padding: 0.85rem 1.2rem;
+	border: 1px solid var(--line);
+	border-radius: 1.55rem;
+	background: var(--paper-raised);
+	color: var(--ink);
+	font: inherit;
+	line-height: 1.45;
+	transition: border-color 0.25s var(--ease);
+}
+
+.composer textarea::placeholder {
+	color: var(--muted);
+}
+
+.composer textarea:focus {
+	outline: none;
+	border-color: var(--ink-soft);
+}
+
+.composer .send {
+	flex: none;
+	width: 3.1rem;
+	height: 3.1rem;
+	display: grid;
+	place-items: center;
+	border-radius: 50%;
+	border: 1px solid var(--ink);
+	background: var(--ink);
+	color: var(--paper);
+	cursor: pointer;
+	transition: background 0.25s var(--ease), border-color 0.25s var(--ease), opacity 0.25s var(--ease);
+}
+
+.composer .send:hover:not(:disabled) {
+	background: var(--rust);
+	border-color: var(--rust);
+}
+
+.composer .send:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.composer-note {
+	margin-top: 0.55rem;
+	text-align: center;
+	letter-spacing: 0.08em;
+}
+
+.composer-note a {
+	text-decoration: none;
+	border-bottom: 1px solid var(--line);
+}

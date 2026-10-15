@@ -39,7 +39,7 @@
   },
   {
    "name": "filtered",
-   "label": "LLM filters + meaning (this demo)",
+   "label": "LLM filters + meaning (this assistant)",
    "precision@10": 0.9925,
    "ndcg@10": 0.993,
    "recall@100": 0.9919

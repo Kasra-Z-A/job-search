@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How the job search works · Kasra Zarinehbaf Asadi</title>
+  <meta name="description" content="How the job search assistant understands a request, retrieves jobs and answers, and how 1,464 test searches measure it.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="how.css">
+  <script src="theme.js"></script>
+  <script src="how.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="topbar__pill" aria-label="Main">
+      <a class="topbar__mark" href="https://kasra.page">Kasra Zarinehbaf Asadi <em>· Job search</em></a>
+      <span class="topbar__links">
+        <a href="./">Try it</a>
+        <a href="how.html" aria-current="page">How it works</a>
+        <button class="theme" type="button" data-theme-toggle aria-label="Switch colour theme">
+          <span class="theme__dot" aria-hidden="true"></span>
+          <span class="theme__label">dark</span>
+        </button>
+      </span>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <p class="label">Project demo · Retrieval and generation over job postings</p>
+      <h1>Finding jobs by <em>asking</em> for them</h1>
+      <p class="lead">You describe the job you want in your own words. The assistant works out what you mean, finds
+        matching postings among 9,458 remote jobs, and says which fit best and why. Every step that can be
+        measured is measured on 1,464 test searches with known answers.</p>
+      <dl class="metrics">
+        <div class="metric"><dd class="metric__value" id="m-precision">99%</dd><dt class="label">of top-10 results meet the whole search</dt></div>
+        <div class="metric"><dd class="metric__value">98%</dd><dt class="label">of searches understood exactly</dt></div>
+        <div class="metric"><dd class="metric__value" id="m-queries">1,464</dd><dt class="label">test searches</dt></div>
+        <div class="metric"><dd class="metric__value">~6 s</dd><dt class="label">per answer</dt></div>
+      </dl>
+      <p><a class="pill pill--solid" href="./">Try the search</a></p>
+    </section>
+
+    <section class="section">
+      <h2>Three steps per message</h2>
+      <ol class="steps">
+        <li class="step">
+          <span class="label step__n">01</span>
+          <h3 class="step__title">Understand</h3>
+          <p class="step__text">Claude Haiku turns the message into filters: level, job family, where you can
+            work from, contract type, minimum salary. A follow-up updates the filters from the conversation so far.</p>
+        </li>
+        <li class="step">
+          <span class="label step__n">02</span>
+          <h3 class="step__title">Retrieve</h3>
+          <p class="step__text">Jobs that contradict a filter are dropped; the rest are ranked by meaning with OpenAI
+            embeddings. A job that doesn't state a detail stays in, behind the sure matches.</p>
+        </li>
+        <li class="step">
+          <span class="label step__n">03</span>
+          <h3 class="step__title">Answer</h3>
+          <p class="step__text">Haiku reads the top 20 and picks the best fits, each with a reason. It names jobs by
+            number only: titles, links and facts come from the data, and every amount it writes is checked against
+            the data before you see it.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2>Measured, not eyeballed</h2>
+      <p class="prose">Judging search results usually means reading them by hand. Here the answers are known in advance.
+        The test searches are built from the jobs' own fields, for example <em>senior · Developer · open to Canada ·
+        at least $140k</em>, rewritten into everyday language by one LLM and checked against their fields by another.
+        Each system is scored on the same searches by the share of its top ten results that meet everything the
+        search asked for.</p>
+
+      <figure class="figure">
+        <figcaption>
+          <span class="figure__title">Share of the top 10 results that meet the whole search</span>
+          <span class="label">Precision@10 · mean over 1,464 test searches</span>
+        </figcaption>
+        <div id="chart-systems" class="chart"></div>
+        <details class="table-view">
+          <summary class="label">Show as table</summary>
+          <table id="table-systems"></table>
+        </details>
+      </figure>
+
+      <h3 class="subhead">What the 99% means</h3>
+      <p class="prose">The search filters on the same fields the test answers come from. Once it understands a
+        request, everything it returns qualifies, so the score mostly measures understanding: 98% of test searches
+        are read exactly right. Most misses are "management role", which the job board uses both as a job family and
+        as a level. What this test cannot see is how well a job fits the topic inside a broad family such as
+        "Developer"; that judgement is what the answer step adds. So the claim is "it applies what you asked for",
+        not "every result is perfect".</p>
+
+      <h3 class="subhead">Without the structured fields</h3>
+      <p class="prose">Many job sites only have the posting text. In that setting an LLM reads every description and
+        records what it states, leaving the rest unknown. That more than doubles precision over meaning-based search,
+        but stays far below the version with structured fields, and the reason is missing information: salary appears
+        in 85% of descriptions that have one, location in about half, contract type in a third.</p>
+
+      <figure class="figure">
+        <figcaption>
+          <span class="figure__title">Precision@10 by what the search asks for</span>
+          <span class="label">Searches that include each field</span>
+        </figcaption>
+        <div id="chart-fields" class="multiples"></div>
+        <details class="table-view">
+          <summary class="label">Show as table</summary>
+          <table id="table-fields"></table>
+        </details>
+      </figure>
+    </section>
+
+    <section class="section">
+      <h2>Checks and limits</h2>
+      <ul class="limits">
+        <li>Forty deliberately sloppy searches ("mid dev job philipines fulltime") score 0.997, against 1.000 for the
+          same searches worded cleanly.</li>
+        <li>The test searches were written by an LLM, and the assistant reads them with one. A comparison with
+          searches written by people is still open.</li>
+        <li>The scores measure the first message. Follow-ups and the written answers are not part of the evaluation
+          yet.</li>
+        <li>The job board's own tags are not perfect: a hand check of 48 seniority tags agreed with 88%.</li>
+        <li>Differences between systems come with 95% confidence intervals over searches; keywords plus meaning is
+          not reliably better than meaning alone.</li>
+        <li>An answer costs about $0.002 in API calls. Building and evaluating everything cost about $5.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="foot wrap">
+    <p class="label">Jobs from <a href="https://himalayas.app">Himalayas</a>, a snapshot from 13 Oct 2026 · built by
+      <a href="https://kasra.page">Kasra Zarinehbaf Asadi</a> with Claude Haiku and OpenAI embeddings</p>
+  </footer>
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+</body>
+</html>

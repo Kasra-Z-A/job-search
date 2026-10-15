@@ -43,7 +43,7 @@ SYSTEMS = [
     ("embeddings", "Meaning search (embeddings)"),
     ("hybrid", "Keywords + meaning"),
     ("textonly", "LLM, posting text only"),
-    ("filtered", "LLM filters + meaning (this demo)"),
+    ("filtered", "LLM filters + meaning (this assistant)"),
 ]
 FIELD_LABELS = {"salary_min_usd": "Salary", "category": "Category", "seniority": "Seniority",
                 "employment_type": "Contract type", "country": "Location"}
