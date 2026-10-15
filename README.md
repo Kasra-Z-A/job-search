@@ -12,6 +12,7 @@ uv run python -m job_search.snapshot --limit 10000   # dated snapshot in data/sn
 uv run python -m job_search.normalise data/snapshots/himalayas-2026-10-13.jsonl.gz
 uv run python -m job_search.app.bundle data/normalised/himalayas-2026-10-13.jsonl.gz   # demo data + web/results.json
 AWS_PROFILE=admin deploy/deploy.sh 2026-10-13   # build, upload and deploy jobs.kasra.page
+AWS_PROFILE=admin deploy/deploy.sh 2026-10-13 --web-only   # page changes only
 uv run python -m job_search.spotcheck render data/review/seniority-spotcheck-2026-10-13.csv
 ```
 
