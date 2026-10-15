@@ -14,3 +14,5 @@ data/eval/raw/.*
 data/runs/
 data/embeddings/
 data/extracted/.*
+data/app/
+build/

@@ -7,14 +7,12 @@ authors = [
     { name = "Kasra-Z-A" }
 ]
 requires-python = ">=3.12"
+# What the search backend needs at runtime; the Lambda package installs only these.
 dependencies = [
     "anthropic>=1.13.0",
     "httpx>=0.28.1",
-    "lingua-language-detector>=2.2.0",
     "numpy>=2.5.4",
     "openai>=3.31.0",
-    "rank-bm25>=0.2.2",
-    "snowballstemmer>=3.1.1",
 ]
 
 [build-system]
@@ -26,5 +24,15 @@ pythonpath = ["src"]
 
 [dependency-groups]
 dev = [
+    "boto3>=1.43.114",
     "pytest>=9.1.1",
 ]
+# Data pipeline and baselines only: language detection, BM25.
+pipeline = [
+    "lingua-language-detector>=2.2.0",
+    "rank-bm25>=0.2.2",
+    "snowballstemmer>=3.1.1",
+]
+
+[tool.uv]
+default-groups = ["dev", "pipeline"]

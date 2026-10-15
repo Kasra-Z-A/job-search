@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Job search in plain language · Kasra</title>
+  <meta name="description" content="Describe the job you want in your own words. An LLM turns it into filters, embeddings rank the rest, and a 1,464-query benchmark measures how well it works.">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow"><a href="https://kasra.page">kasra.page</a> · project demo</p>
+      <h1>Job search in plain language</h1>
+      <p class="lede">Describe the job you want, the way you would say it. An LLM turns your words into
+        filters, and meaning-based search ranks the jobs that pass. It searches <span id="job-count">9,458</span>
+        remote jobs as of <span id="snapshot-date">13 October 2026</span>.</p>
+    </header>
+
+    <form id="search" role="search">
+      <label for="q" class="visually-hidden">Describe the job you want</label>
+      <input id="q" name="q" type="search" minlength="3" maxlength="200" autocomplete="off"
+             placeholder="e.g. senior data jobs open to people in Germany, at least $90k" required>
+      <button type="submit">Search</button>
+    </form>
+    <div class="examples" aria-label="Example searches">
+      <span>Try:</span>
+      <button type="button" data-q="senior data science jobs open to people in Germany, at least $90k">senior data science, Germany, $90k+</button>
+      <button type="button" data-q="junior developer contract work, I'm based in Canada">junior dev contract, Canada</button>
+      <button type="button" data-q="full-time product manager roles paying 150k or more">product manager, $150k+</button>
+      <button type="button" data-q="part time customer support jobs for someone in the Philippines">part-time support, Philippines</button>
+      <button type="button" data-q="director or VP of marketing, $180,000 or more">marketing director, $180k+</button>
+    </div>
+
+    <section id="results" aria-live="polite" hidden>
+      <div id="understood"></div>
+      <p id="summary" class="muted"></p>
+      <ol id="list"></ol>
+    </section>
+    <p id="error" class="error" role="alert" hidden></p>
+
+    <section id="evaluation" class="writeup">
+      <h2>How well does it work?</h2>
+      <p>Judging search results usually means reading them by hand. Here the answers are known in advance:
+        <span id="query-count">1,464</span> test searches were built from the jobs' own fields (for example
+        <em>senior · Developer · open to Canada · at least $140k</em>), rewritten into everyday language by one
+        LLM and checked against their fields by another. Every system is scored on the same searches, by
+        <strong>precision@10</strong>: the share of its top ten results that meet everything the search asked for.</p>
+
+      <figure class="viz-root">
+        <figcaption>
+          <span class="viz-title">Share of the top 10 results that meet the whole search</span>
+          <span class="viz-sub">Precision@10, mean over 1,464 test searches</span>
+        </figcaption>
+        <div id="chart-systems" class="chart"></div>
+        <details>
+          <summary>Show as table</summary>
+          <table id="table-systems"></table>
+        </details>
+      </figure>
+
+      <h3>What the 99% means</h3>
+      <p>The demo filters on the same fields the test answers come from. Once it understands a search,
+        everything it returns qualifies, so the score mostly measures understanding: 98% of test searches are
+        read perfectly. Most misses are "management role", which the job board uses both as a job family and
+        as a level. What this test cannot see is how well a job fits the topic inside a broad family such as
+        "Developer". So the claim is "it applies what you asked for", not "every result is perfect".</p>
+
+      <h3>Without the structured fields</h3>
+      <p>Many job sites only have the posting text. In that setting the LLM reads every description and
+        records what it states, leaving the rest unknown. That more than doubles precision over meaning-based
+        search, but stays far below the version with structured fields, and the reason is missing information:
+        salary appears in 85% of descriptions that have one, location in about half, contract type in a third.</p>
+
+      <figure class="viz-root">
+        <figcaption>
+          <span class="viz-title">Precision@10 by what the search asks for</span>
+          <span class="viz-sub">Searches that include each field</span>
+        </figcaption>
+        <div id="legend-fields" class="legend"></div>
+        <div id="chart-fields" class="chart"></div>
+        <details>
+          <summary>Show as table</summary>
+          <table id="table-fields"></table>
+        </details>
+      </figure>
+
+      <h3>Checks and limits</h3>
+      <ul>
+        <li>Forty deliberately sloppy searches ("mid dev job philipines fulltime") score 0.997, against 1.000
+          for the same searches worded cleanly.</li>
+        <li>The test searches were written by an LLM, and the demo reads them with one. A comparison with
+          searches written by people is still open.</li>
+        <li>The job board's own tags are not perfect: a hand check of 48 seniority tags agreed with 88%.</li>
+        <li>Differences between systems are reported with 95% confidence intervals over searches; the
+          keywords-plus-meaning hybrid is not reliably better than meaning alone.</li>
+        <li>Each new search costs about $0.0004 in API calls. Building and evaluating everything cost about $5.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Job data from <a href="https://himalayas.app">Himalayas</a>; every result links to its original posting.
+      Jobs are a snapshot from <span class="snapshot-date">13 October 2026</span>, so some may have closed.
+      Built by <a href="https://kasra.page">Kasra</a> with Claude Haiku 5.5 and OpenAI embeddings.</p>
+  </footer>
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+</body>
+</html>
