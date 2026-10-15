@@ -9,11 +9,14 @@ definition of "at least X", "open to people in X" and the seniority levels):
   (no stated salary, no category) stays, ranked after the known matches;
 - within each group, jobs are ordered by embedding similarity to the query.
 
-This is the metadata track: the system reads structured fields, unlike the
-text-only baselines. Parses and embeddings are read from their caches, so
-building the run costs nothing.
+By default this is the metadata track: the system reads Himalayas' fields.
+With `--fields extracted` it is the text-only track: the fields come from
+the posting text (`extract`), unknown where the text is silent, and the run
+is named `textonly`. Parses, embeddings and extractions are read from their
+caches, so building a run costs nothing.
 
     uv run python -m job_search.systems.filtered data/normalised/himalayas-2026-10-13.jsonl.gz
+    uv run python -m job_search.systems.filtered data/normalised/himalayas-2026-10-13.jsonl.gz --fields extracted
 """
 
 from __future__ import annotations
@@ -30,7 +33,17 @@ from job_search.specs import check
 from job_search.systems import add_arguments, load_jobs, load_queries, run_name, write_run
 from job_search.systems.embeddings import CACHE_DIR
 from job_search.systems.embeddings import MODEL as EMBEDDING_MODEL
+from job_search.systems.extract import load_extracted
 from job_search.systems.parse import as_constraints, parses_path
+
+
+def field_unknown(job: dict, field: str) -> bool:
+    """Extracted jobs (text-only track) mark an unstated level or location with None."""
+    if field == "seniority":
+        return job["seniority"] is None
+    if field == "country":
+        return job["countries"] is None and not job["worldwide"]
+    return False
 
 
 def filter_outcome(job: dict, filters: dict) -> str:
@@ -38,6 +51,9 @@ def filter_outcome(job: dict, filters: dict) -> str:
     unknown = False
     for field, values in filters.items():
         if values in (None, []):
+            continue
+        if field_unknown(job, field):
+            unknown = True
             continue
         outcomes = {check(job, field, v) for v in (values if isinstance(values, list) else [values])}
         if "yes" in outcomes:
@@ -66,10 +82,14 @@ def load_vectors(path: Path, ids: list[str]) -> np.ndarray:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     add_arguments(parser)
+    parser.add_argument("--fields", choices=["labels", "extracted"], default="labels")
     args = parser.parse_args(argv)
 
     date = snapshot_date(args.normalised)
     jobs = load_jobs(args.normalised)
+    if args.fields == "extracted":
+        extracted = load_extracted(args.normalised)
+        jobs = [extracted[j["id"]] for j in jobs]
     queries = load_queries(args.normalised, args.queries)
     job_vectors = load_vectors(CACHE_DIR / f"{EMBEDDING_MODEL}-jobs-{date}.npz", [j["id"] for j in jobs])
     query_vectors = load_vectors(CACHE_DIR / f"{EMBEDDING_MODEL}-{args.queries}-{date}.npz",
@@ -82,7 +102,7 @@ def main(argv: list[str] | None = None) -> None:
         q["spec_id"]: rank_filtered(jobs, similarity[n], as_constraints(parses[q["spec_id"]]))
         for n, q in enumerate(queries)
     }
-    print(write_run(run_name("filtered", args.queries), args.normalised, rankings))
+    print(write_run(run_name("filtered" if args.fields == "labels" else "textonly", args.queries), args.normalised, rankings))
 
 
 if __name__ == "__main__":

@@ -13,3 +13,4 @@ data/normalised/
 data/eval/raw/.*
 data/runs/
 data/embeddings/
+data/extracted/.*
