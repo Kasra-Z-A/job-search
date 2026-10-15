@@ -52,7 +52,7 @@
         the labels decide which jobs qualify, and the vectors decide their order.</p>
 
       <figure class="arch">
-        <svg class="arch-svg" viewBox="0 0 1200 610" aria-hidden="true" focusable="false">
+        <svg class="arch-svg" viewBox="0 0 880 1190" aria-hidden="true" focusable="false">
           <defs>
             <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path class="arch-head" d="M0 0 L10 5 L0 10 Z"/>
@@ -60,114 +60,110 @@
           </defs>
 
           <!-- offline: once per snapshot -->
-          <text class="arch-lane" x="40" y="30">OFFLINE · ONCE PER SNAPSHOT</text>
+          <text class="arch-lane" x="440" y="30" text-anchor="middle">OFFLINE · ONCE PER SNAPSHOT</text>
 
           <g>
-            <rect class="arch-card" x="40" y="130" width="200" height="96" rx="8"/>
-            <text class="arch-kicker" x="58" y="154">SNAPSHOT</text>
-            <text class="arch-title" x="58" y="177">Crawl</text>
-            <text class="arch-detail" x="58" y="197">10,000 postings</text>
-            <text class="arch-tool" x="58" y="215">Himalayas API</text>
-          </g>
-          <g>
-            <rect class="arch-card" x="300" y="56" width="240" height="96" rx="8"/>
-            <text class="arch-kicker" x="318" y="80">TEXT</text>
-            <text class="arch-title" x="318" y="103">Embed</text>
-            <text class="arch-detail" x="318" y="123">title + description → vector</text>
-            <text class="arch-tool" x="318" y="141">text-embedding-3-small</text>
-          </g>
-          <g>
-            <rect class="arch-card" x="300" y="190" width="240" height="96" rx="8"/>
-            <text class="arch-kicker" x="318" y="214">FIELDS</text>
-            <text class="arch-title" x="318" y="237">Normalise labels</text>
-            <text class="arch-detail" x="318" y="257">level, category, country, salary</text>
-            <text class="arch-tool" x="318" y="275">salary in USD · ECB rates</text>
+            <rect class="arch-card" x="290" y="50" width="300" height="96" rx="8"/>
+            <text class="arch-kicker" x="308" y="74">SNAPSHOT</text>
+            <text class="arch-title" x="308" y="97">Crawl</text>
+            <text class="arch-detail" x="308" y="117">10,000 postings, English kept</text>
+            <text class="arch-tool" x="308" y="135">Himalayas API</text>
           </g>
 
-          <path class="arch-track" d="M244 178 H270 V104 H296" marker-end="url(#arch-arrow)"/>
-          <path class="arch-track" d="M270 178 V238 H296" marker-end="url(#arch-arrow)"/>
-          <path class="arch-track" d="M544 104 H1040 V126" marker-end="url(#arch-arrow)"/>
-          <line class="arch-track" x1="544" y1="238" x2="596" y2="238" marker-end="url(#arch-arrow)"/>
+          <path class="arch-track" d="M440 150 V170 H230 V192" marker-end="url(#arch-arrow)"/>
+          <path class="arch-track" d="M440 170 H650 V192" marker-end="url(#arch-arrow)"/>
+
+          <g>
+            <rect class="arch-card" x="60" y="196" width="340" height="96" rx="8"/>
+            <text class="arch-kicker" x="78" y="220">FIELDS</text>
+            <text class="arch-title" x="78" y="243">Normalise labels</text>
+            <text class="arch-detail" x="78" y="263">level, category, country, contract, salary</text>
+            <text class="arch-tool" x="78" y="281">salary in USD · ECB rates</text>
+          </g>
+          <g>
+            <rect class="arch-card" x="480" y="196" width="340" height="96" rx="8"/>
+            <text class="arch-kicker" x="498" y="220">TEXT</text>
+            <text class="arch-title" x="498" y="243">Embed</text>
+            <text class="arch-detail" x="498" y="263">title + description → vector</text>
+            <text class="arch-tool" x="498" y="281">text-embedding-3-small</text>
+          </g>
+
+          <line class="arch-track" x1="230" y1="296" x2="230" y2="334" marker-end="url(#arch-arrow)"/>
+          <line class="arch-track" x1="650" y1="296" x2="650" y2="334" marker-end="url(#arch-arrow)"/>
 
           <!-- the index: one row per job, labels and vector side by side -->
           <g>
-            <rect class="arch-store" x="600" y="130" width="560" height="170" rx="8"/>
-            <text class="arch-title" x="618" y="156">Job index</text>
-            <text class="arch-detail" x="700" y="156">9,458 jobs, one row each</text>
-            <text class="arch-kicker" x="618" y="182">LABELS</text>
-            <text class="arch-kicker" x="938" y="182">VECTOR</text>
-            <line class="arch-rule" x1="618" y1="192" x2="1142" y2="192"/>
-            <line class="arch-rule" x1="920" y1="168" x2="920" y2="290"/>
-            <text class="arch-detail" x="618" y="214">Senior · Data Science · Germany · $80–100k</text>
-            <text class="arch-tool" x="938" y="214">[0.12, −0.03, 0.40, …]</text>
-            <text class="arch-detail" x="618" y="238">Mid-level · Design · worldwide · no salary</text>
-            <text class="arch-tool" x="938" y="238">[0.07, 0.21, −0.15, …]</text>
-            <text class="arch-detail" x="618" y="262">Senior · Data Science · US only · $150k</text>
-            <text class="arch-tool" x="938" y="262">[−0.02, 0.09, 0.33, …]</text>
-            <text class="arch-detail" x="618" y="284">…</text>
-            <text class="arch-tool" x="938" y="284">…</text>
+            <rect class="arch-store" x="40" y="338" width="800" height="182" rx="8"/>
+            <text class="arch-title" x="60" y="364">Job index</text>
+            <text class="arch-detail" x="142" y="364">9,458 jobs, one row each</text>
+            <text class="arch-kicker" x="60" y="392">LABELS</text>
+            <text class="arch-kicker" x="500" y="392">VECTOR</text>
+            <line class="arch-rule" x1="60" y1="402" x2="820" y2="402"/>
+            <line class="arch-rule" x1="480" y1="378" x2="480" y2="510"/>
+            <text class="arch-detail" x="60" y="424">Senior · Data Science · Germany · $80–100k</text>
+            <text class="arch-tool" x="500" y="424">[0.12, −0.03, 0.40, …]</text>
+            <text class="arch-detail" x="60" y="448">Mid-level · Design · worldwide · no salary</text>
+            <text class="arch-tool" x="500" y="448">[0.07, 0.21, −0.15, …]</text>
+            <text class="arch-detail" x="60" y="472">Senior · Data Science · US only · $150k</text>
+            <text class="arch-tool" x="500" y="472">[−0.02, 0.09, 0.33, …]</text>
+            <text class="arch-detail" x="60" y="496">…</text>
+            <text class="arch-tool" x="500" y="496">…</text>
+          </g>
+
+          <!-- online: every message -->
+          <text class="arch-lane" x="440" y="566" text-anchor="middle">ONLINE · EVERY MESSAGE</text>
+
+          <g>
+            <rect class="arch-bubble arch-bubble--user" x="310" y="584" width="260" height="48" rx="24"/>
+            <text class="arch-bubble-text" x="440" y="613" text-anchor="middle">senior data jobs in Germany, $90k+</text>
+          </g>
+          <line class="arch-track" x1="440" y1="636" x2="440" y2="668" marker-end="url(#arch-arrow)"/>
+
+          <g>
+            <rect class="arch-card" x="240" y="672" width="400" height="100" rx="8"/>
+            <text class="arch-num" x="258" y="696">01</text>
+            <text class="arch-measured" x="622" y="696" text-anchor="end">MEASURED</text>
+            <text class="arch-title" x="258" y="719">Understand</text>
+            <text class="arch-detail" x="258" y="739">message → filters, using only values in the index</text>
+            <text class="arch-tool" x="258" y="759">Claude Haiku · follow-ups keep earlier filters</text>
+          </g>
+          <line class="arch-track" x1="440" y1="776" x2="440" y2="808" marker-end="url(#arch-arrow)"/>
+
+          <g>
+            <rect class="arch-card" x="240" y="812" width="400" height="110" rx="8"/>
+            <text class="arch-num" x="258" y="836">02</text>
+            <text class="arch-measured" x="622" y="836" text-anchor="end">MEASURED</text>
+            <text class="arch-title" x="258" y="859">Retrieve</text>
+            <text class="arch-detail" x="258" y="879">drop jobs whose labels fail a filter</text>
+            <text class="arch-detail" x="258" y="897">rank the rest by vector similarity to the message</text>
+            <text class="arch-tool" x="258" y="913">top 20 passed on</text>
+          </g>
+          <line class="arch-track" x1="440" y1="926" x2="440" y2="948" marker-end="url(#arch-arrow)"/>
+
+          <g>
+            <rect class="arch-card" x="240" y="952" width="400" height="100" rx="8"/>
+            <text class="arch-num" x="258" y="976">03</text>
+            <text class="arch-unmeasured" x="622" y="976" text-anchor="end">NOT YET MEASURED</text>
+            <text class="arch-title" x="258" y="999">Answer</text>
+            <text class="arch-detail" x="258" y="1019">picks up to 6 of the 20 jobs, with a reason each</text>
+            <text class="arch-tool" x="258" y="1039">Claude Haiku · facts checked against the data</text>
+          </g>
+          <line class="arch-track" x1="440" y1="1056" x2="440" y2="1088" marker-end="url(#arch-arrow)"/>
+
+          <g>
+            <rect class="arch-bubble arch-bubble--reply" x="310" y="1092" width="260" height="48" rx="24"/>
+            <text class="arch-bubble-text" x="440" y="1121" text-anchor="middle">summary + picked jobs with links</text>
           </g>
 
           <!-- the index feeds retrieval and the answer -->
-          <path class="arch-track arch-track--feed" d="M760 304 C760 345 530 335 530 376" marker-end="url(#arch-arrow)"/>
-          <path class="arch-track arch-track--feed" d="M1040 304 C1040 350 670 330 670 376" marker-end="url(#arch-arrow)"/>
-          <path class="arch-track arch-track--feed" d="M1110 304 C1110 350 880 330 880 376" marker-end="url(#arch-arrow)"/>
-          <text class="arch-edge" x="544" y="368">labels: filter</text>
-          <text class="arch-edge" x="684" y="368">vectors: rank</text>
-          <text class="arch-edge" x="894" y="368">descriptions</text>
+          <path class="arch-track arch-track--feed" d="M120 524 V860 H236" marker-end="url(#arch-arrow)"/>
+          <text class="arch-edge" x="126" y="852">labels: filter</text>
+          <path class="arch-track arch-track--feed" d="M750 524 V860 H644" marker-end="url(#arch-arrow)"/>
+          <text class="arch-edge" x="744" y="852" text-anchor="end">vectors: rank</text>
+          <path class="arch-track arch-track--feed" d="M810 524 V1002 H644" marker-end="url(#arch-arrow)"/>
+          <text class="arch-edge" x="804" y="994" text-anchor="end">descriptions</text>
 
-          <!-- online: every message -->
-          <text class="arch-lane" x="40" y="340">ONLINE · EVERY MESSAGE</text>
-
-          <g>
-            <rect class="arch-bubble arch-bubble--user" x="40" y="411" width="160" height="48" rx="24"/>
-            <text class="arch-bubble-text" x="60" y="431">senior data jobs in</text>
-            <text class="arch-bubble-text" x="60" y="449">Germany, $90k+</text>
-          </g>
-          <g>
-            <rect class="arch-card" x="240" y="380" width="200" height="110" rx="8"/>
-            <text class="arch-num" x="258" y="404">01</text>
-            <text class="arch-title" x="258" y="427">Understand</text>
-            <text class="arch-detail" x="258" y="447">message → filters, using</text>
-            <text class="arch-detail" x="258" y="465">only values in the index</text>
-            <text class="arch-tool" x="258" y="482">Claude Haiku</text>
-          </g>
-          <g>
-            <rect class="arch-card" x="480" y="380" width="260" height="110" rx="8"/>
-            <text class="arch-num" x="498" y="404">02</text>
-            <text class="arch-title" x="498" y="427">Retrieve</text>
-            <text class="arch-detail" x="498" y="447">drop jobs whose labels fail</text>
-            <text class="arch-detail" x="498" y="465">rank the rest by similarity</text>
-            <text class="arch-tool" x="498" y="482">message embedded · top 20</text>
-          </g>
-          <g>
-            <rect class="arch-card" x="780" y="380" width="180" height="110" rx="8"/>
-            <text class="arch-num" x="798" y="404">03</text>
-            <text class="arch-title" x="798" y="427">Answer</text>
-            <text class="arch-detail" x="798" y="447">pick up to 6 jobs</text>
-            <text class="arch-detail" x="798" y="465">with a reason each</text>
-            <text class="arch-tool" x="798" y="482">Claude Haiku</text>
-          </g>
-          <g>
-            <rect class="arch-bubble arch-bubble--reply" x="1000" y="411" width="160" height="48" rx="24"/>
-            <text class="arch-bubble-text" x="1018" y="431">summary + picked</text>
-            <text class="arch-bubble-text" x="1018" y="449">jobs with links</text>
-          </g>
-
-          <line class="arch-track" x1="204" y1="435" x2="236" y2="435" marker-end="url(#arch-arrow)"/>
-          <line class="arch-track" x1="444" y1="435" x2="476" y2="435" marker-end="url(#arch-arrow)"/>
-          <line class="arch-track" x1="744" y1="435" x2="776" y2="435" marker-end="url(#arch-arrow)"/>
-          <line class="arch-track" x1="964" y1="435" x2="996" y2="435" marker-end="url(#arch-arrow)"/>
-
-          <!-- what the evaluation covers -->
-          <path class="arch-bracket" d="M240 504 V514 H740 V504"/>
-          <text class="arch-measured" x="490" y="536" text-anchor="middle">MEASURED · PRECISION@10 0.993 · 1,464 SEARCHES</text>
-          <path class="arch-bracket arch-bracket--open" d="M780 504 V514 H960 V504"/>
-          <text class="arch-unmeasured" x="870" y="536" text-anchor="middle">NOT YET MEASURED</text>
-
-          <!-- the follow-up loop -->
-          <path class="arch-track" d="M1080 463 V572 Q1080 592 1060 592 H140 Q120 592 120 572 V463" marker-end="url(#arch-arrow)"/>
-          <text class="arch-edge" x="600" y="584" text-anchor="middle">a follow-up carries the earlier filters and the jobs already shown</text>
+          <text class="arch-measured" x="440" y="1176" text-anchor="middle">MEASURED · PRECISION@10 0.993 · 1,464 TEST SEARCHES</text>
         </svg>
 
         <ol class="arch-list">

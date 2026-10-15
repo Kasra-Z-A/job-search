@@ -93,11 +93,12 @@
    the narrow-screen version and what screen readers get at every width. */
 
 /* Wider than the text column, like a wide image, so the drawing renders near
-   its natural size instead of shrinking its labels. */
+   its natural size instead of shrinking its labels. The drawing is a single
+   column, so it stops at its natural width. */
 .arch {
 	position: relative;
 	left: 50%;
-	width: min(calc(100vw - 2 * var(--gutter)), 76rem);
+	width: min(calc(100vw - 2 * var(--gutter)), 60rem);
 	transform: translateX(-50%);
 	margin: 2rem 0 0;
 	padding: clamp(1.1rem, 2.5vw, 1.75rem);
@@ -109,6 +110,8 @@
 .arch-svg {
 	display: block;
 	width: 100%;
+	max-width: 880px;
+	margin: 0 auto;
 	height: auto;
 }
 
