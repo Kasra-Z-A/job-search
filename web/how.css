@@ -88,53 +88,205 @@
 	color: var(--ink);
 }
 
-/* Steps: one row each, number, name and text, with the rust dot on the spine. */
-.steps {
+/* --- architecture diagram ------------------------------------------------
+   Drawn from the site's tokens, so it follows the theme toggle. The list is
+   the narrow-screen version and what screen readers get at every width. */
+
+/* Wider than the text column, like a wide image, so the drawing renders near
+   its natural size instead of shrinking its labels. */
+.arch {
+	position: relative;
+	left: 50%;
+	width: min(calc(100vw - 2 * var(--gutter)), 76rem);
+	transform: translateX(-50%);
+	margin: 2rem 0 0;
+	padding: clamp(1.1rem, 2.5vw, 1.75rem);
+	border: 1px solid var(--line);
+	border-radius: 1.25rem;
+	background: var(--paper-raised);
+}
+
+.arch-svg {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.arch-card {
+	fill: var(--paper);
+	stroke: var(--line);
+	stroke-width: 1;
+}
+
+.arch-store {
+	fill: var(--rust-tint);
+	stroke: var(--rust);
+	stroke-width: 1.25;
+}
+
+.arch-num {
+	fill: var(--rust);
+	font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+	font-size: 11px;
+	letter-spacing: 0.08em;
+}
+
+.arch-kicker,
+.arch-lane {
+	fill: var(--muted);
+	font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+	font-size: 10px;
+	letter-spacing: 0.14em;
+}
+
+.arch-title {
+	fill: var(--ink);
+	font-family: "Inter Variable", system-ui, sans-serif;
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.arch-detail {
+	fill: var(--ink-soft);
+	font-family: "Inter Variable", system-ui, sans-serif;
+	font-size: 12.5px;
+}
+
+.arch-tool {
+	fill: var(--muted);
+	font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+	font-size: 10.5px;
+}
+
+.arch-track {
+	fill: none;
+	stroke: var(--rust);
+	stroke-width: 1.5;
+}
+
+.arch-track--feed {
+	stroke-dasharray: 4 3;
+}
+
+.arch-head {
+	fill: var(--rust);
+}
+
+.arch-edge {
+	fill: var(--rust);
+	font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+	font-size: 11px;
+}
+
+.arch-bubble--user {
+	fill: var(--ink);
+}
+
+.arch-bubble--reply {
+	fill: var(--rust-deep);
+}
+
+.arch-bubble-text {
+	fill: var(--paper);
+	font-family: "Inter Variable", system-ui, sans-serif;
+	font-size: 12.5px;
+}
+
+:root[data-theme="dark"] .arch-bubble--reply + .arch-bubble-text,
+:root[data-theme="dark"] .arch-bubble--reply ~ .arch-bubble-text {
+	fill: #f4f1ea;
+}
+
+.arch-bracket {
+	fill: none;
+	stroke: var(--rust);
+	stroke-width: 1.5;
+}
+
+.arch-bracket--open {
+	stroke: var(--muted);
+	stroke-dasharray: 4 3;
+}
+
+.arch-measured,
+.arch-unmeasured {
+	font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+	font-size: 10.5px;
+	letter-spacing: 0.1em;
+}
+
+.arch-measured {
+	fill: var(--rust);
+}
+
+.arch-unmeasured {
+	fill: var(--muted);
+}
+
+.arch figcaption {
+	margin-top: 1.25rem;
+	max-width: 78ch;
+	color: var(--ink-soft);
+	font-size: var(--step-small);
+}
+
+.arch-list {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
 
-.step {
-	display: grid;
-	grid-template-columns: 4rem minmax(0, 12rem) minmax(0, 1fr);
-	gap: clamp(1rem, 2.5vw, 2.25rem);
-	align-items: baseline;
-	border-top: 1px solid var(--line);
-	padding-block: clamp(0.9rem, 1.6vw, 1.2rem);
+.arch-list h3 {
+	font-family: "Inter Variable", system-ui, sans-serif;
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0;
+	margin: 0.2rem 0 0.3rem;
 }
 
-.step:last-child {
-	border-bottom: 1px solid var(--line);
-}
-
-.step__title {
-	position: relative;
-	font-size: 1.5rem;
-	line-height: 1.2;
-	padding-left: 1.1rem;
-}
-
-.step__title::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	top: 0.5em;
-	width: 7px;
-	height: 7px;
-	border-radius: 50%;
-	background: var(--rust);
-}
-
-.step__text {
+.arch-list p {
 	color: var(--ink-soft);
-	max-width: 52ch;
+	font-size: 0.95rem;
 }
 
-@media (max-width: 720px) {
-	.step {
-		grid-template-columns: 1fr;
-		gap: 0.3rem;
+@media (max-width: 760px) {
+	.arch-svg {
+		display: none;
+	}
+
+	.arch-list {
+		position: static;
+		width: auto;
+		height: auto;
+		overflow: visible;
+		clip-path: none;
+		white-space: normal;
+		display: grid;
+		gap: 1.4rem;
+	}
+
+	/* A rail with a dot per step, so the list still reads as one run. */
+	.arch-list li {
+		position: relative;
+		padding-left: 1.4rem;
+		border-left: 1.5px solid var(--rust);
+	}
+
+	.arch-list li::before {
+		content: "";
+		position: absolute;
+		left: -5px;
+		top: 0.3rem;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--rust);
 	}
 }
 
