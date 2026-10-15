@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>How the job search works · Kasra Zarinehbaf Asadi</title>
-  <meta name="description" content="How the job search assistant understands a request, retrieves jobs and answers, and how 1,464 test searches measure it.">
+  <meta name="description" content="How the job search assistant turns a request into filters, retrieves and recommends jobs, and how it is evaluated on 1,464 test searches.">
   <meta name="robots" content="noindex, nofollow">
   <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -30,14 +30,13 @@
 
   <main class="wrap">
     <section class="hero">
-      <p class="label">Project demo · Retrieval and generation over job postings</p>
-      <h1>Finding jobs by <em>asking</em> for them</h1>
-      <p class="lead">You describe the job you want in your own words. The assistant works out what you mean, finds
-        matching postings among 9,458 remote jobs, and says which fit best and why. Every step that can be
-        measured is measured on 1,464 test searches with known answers.</p>
+      <p class="label">Project demo · Job search with an LLM and embeddings</p>
+      <h1>Searching remote jobs in <em>plain language</em></h1>
+      <p class="lead">You describe the job you want in your own words. The assistant converts the request into
+        filters, finds matching jobs among 9,458 remote postings, and recommends the best fits with a reason for each.</p>
       <dl class="metrics">
-        <div class="metric"><dd class="metric__value" id="m-precision">99%</dd><dt class="label">of top-10 results meet the whole search</dt></div>
-        <div class="metric"><dd class="metric__value">98%</dd><dt class="label">of searches understood exactly</dt></div>
+        <div class="metric"><dd class="metric__value" id="m-precision">99%</dd><dt class="label">of top-10 results match every criterion</dt></div>
+        <div class="metric"><dd class="metric__value">98%</dd><dt class="label">of searches converted to the correct filters</dt></div>
         <div class="metric"><dd class="metric__value" id="m-queries">1,464</dd><dt class="label">test searches</dt></div>
         <div class="metric"><dd class="metric__value">~6 s</dd><dt class="label">per answer</dt></div>
       </dl>
@@ -45,11 +44,10 @@
     </section>
 
     <section class="section" aria-labelledby="arch-title">
-      <p class="label">The system</p>
-      <h2 id="arch-title">From a message to an answer</h2>
-      <p class="prose">Two parts. Once per snapshot, the postings are crawled, cleaned and embedded into an index.
-        Then every message runs three steps against that index: understand it, retrieve candidates, answer. The
-        brackets show which steps the evaluation below measures.</p>
+      <p class="label">System</p>
+      <h2 id="arch-title">How a search runs</h2>
+      <p class="prose">The job index is built once per data snapshot. Each message then goes through three steps:
+        convert the request into filters, retrieve matching jobs, and write the answer.</p>
 
       <figure class="arch">
         <svg class="arch-svg" viewBox="0 0 1200 470" aria-hidden="true" focusable="false">
@@ -129,7 +127,7 @@
             <rect class="arch-card" x="720" y="246" width="200" height="96" rx="8"/>
             <text class="arch-num" x="738" y="270">03</text>
             <text class="arch-title" x="738" y="293">Answer</text>
-            <text class="arch-detail" x="738" y="313">≤ 6 picks, checked vs data</text>
+            <text class="arch-detail" x="738" y="313">up to 6 jobs with reasons</text>
             <text class="arch-tool" x="738" y="331">Claude Haiku</text>
           </g>
           <g>
@@ -155,38 +153,34 @@
         </svg>
 
         <ol class="arch-list">
-          <li><span class="label">Offline</span><h3>Crawl, normalise, embed</h3>
-            <p>Once per snapshot: 10,000 postings from the Himalayas API, salaries converted to US dollars, non-English
-              postings dropped, each posting embedded once. The result is a job index of 9,458 jobs with their fields,
-              vectors and descriptions.</p></li>
-          <li><span class="label">01 · Understand</span><h3>Message to filters</h3>
-            <p>Claude Haiku turns the message into filters: level, job family, where you can work from, contract type,
-              minimum salary. A follow-up updates them from the conversation so far.</p></li>
-          <li><span class="label">02 · Retrieve</span><h3>Filter, then rank by meaning</h3>
-            <p>Jobs that contradict a filter are dropped; the rest are ranked by embedding similarity to the request,
-              and the top 20 go on. Steps 01 and 02 are what the evaluation measures: precision@10 0.993.</p></li>
-          <li><span class="label">03 · Answer</span><h3>Pick and explain</h3>
-            <p>Haiku reads the top 20 and picks up to six with a reason, by number only. Titles, links and facts come
-              from the data, and every amount it writes is checked against the data. Not yet evaluated.</p></li>
+          <li><span class="label">Offline</span><h3>Build the index</h3>
+            <p>10,000 postings are downloaded from the Himalayas API. Salaries are converted to US dollars,
+              non-English postings are removed, and each remaining posting is embedded. The index holds 9,458 jobs.</p></li>
+          <li><span class="label">01 · Understand</span><h3>Convert the request into filters</h3>
+            <p>Claude Haiku extracts seniority, job category, eligible locations, contract type and minimum salary.
+              In a follow-up, it updates these filters using the earlier conversation.</p></li>
+          <li><span class="label">02 · Retrieve</span><h3>Filter and rank</h3>
+            <p>Jobs that do not match the filters are removed. The rest are ranked by embedding similarity to the
+              request, and the top 20 are passed on.</p></li>
+          <li><span class="label">03 · Answer</span><h3>Recommend jobs</h3>
+            <p>Claude Haiku selects up to six of the 20 jobs and gives a reason for each. It refers to jobs by
+              number only; titles, links and details are taken from the index, and any amount in a reason is checked
+              against the data.</p></li>
         </ol>
-
-        <figcaption>One message through the system. The index is built once; each message reads it twice, for
-          candidates and for their descriptions. The long arrow is the conversation: a follow-up starts the next
-          round with what came before.</figcaption>
       </figure>
     </section>
 
     <section class="section">
-      <h2>Measured, not eyeballed</h2>
-      <p class="prose">Judging search results usually means reading them by hand. Here the answers are known in advance.
-        The test searches are built from the jobs' own fields, for example <em>senior · Developer · open to Canada ·
-        at least $140k</em>, rewritten into everyday language by one LLM and checked against their fields by another.
-        Each system is scored on the same searches by the share of its top ten results that meet everything the
-        search asked for.</p>
+      <p class="label">Evaluation</p>
+      <h2>How the search is evaluated</h2>
+      <p class="prose">Each test search is generated from a real job's fields, for example <em>senior · Developer ·
+        open to Canada · at least $140k</em>. One LLM rewrites the fields as a plain-language request, and a second
+        LLM checks that the request matches them. Because the criteria are known, a result counts as correct if it
+        meets all of them. Each system is scored by precision@10: the share of its top 10 results that are correct.</p>
 
       <figure class="figure">
         <figcaption>
-          <span class="figure__title">Share of the top 10 results that meet the whole search</span>
+          <span class="figure__title">Share of the top 10 results that match every criterion</span>
           <span class="label">Precision@10 · mean over 1,464 test searches</span>
         </figcaption>
         <div id="chart-systems" class="chart"></div>
@@ -196,24 +190,24 @@
         </details>
       </figure>
 
-      <h3 class="subhead">What the 99% means</h3>
-      <p class="prose">The search filters on the same fields the test answers come from. Once it understands a
-        request, everything it returns qualifies, so the score mostly measures understanding: 98% of test searches
-        are read exactly right. Most misses are "management role", which the job board uses both as a job family and
-        as a level. What this test cannot see is how well a job fits the topic inside a broad family such as
-        "Developer"; that judgement is what the answer step adds. So the claim is "it applies what you asked for",
-        not "every result is perfect".</p>
+      <h3 class="subhead">Interpreting the 99%</h3>
+      <p class="prose">The assistant filters on the same fields the test criteria come from, so when it converts a
+        request correctly, every result qualifies. The score therefore mainly measures that conversion, which is
+        exact for 98% of test searches. Most errors involve "management", which the job board uses both as a job
+        category and as a seniority level. The test does not measure how well a job matches the topic within a broad
+        category such as "Developer"; the answer step is meant to handle that.</p>
 
-      <h3 class="subhead">Without the structured fields</h3>
-      <p class="prose">Many job sites only have the posting text. In that setting an LLM reads every description and
-        records what it states, leaving the rest unknown. That more than doubles precision over meaning-based search,
-        but stays far below the version with structured fields, and the reason is missing information: salary appears
-        in 85% of descriptions that have one, location in about half, contract type in a third.</p>
+      <h3 class="subhead">Without structured fields</h3>
+      <p class="prose">Many job sites have only the posting text. To test this case, an LLM reads each description and
+        records the fields it states. This more than doubles precision compared with meaning search, but stays well
+        below the version with structured fields because descriptions often leave the information out. Of the jobs
+        with a salary, 85% state it in the description; for location the share is about half, and for contract type
+        a third.</p>
 
       <figure class="figure">
         <figcaption>
-          <span class="figure__title">Precision@10 by what the search asks for</span>
-          <span class="label">Searches that include each field</span>
+          <span class="figure__title">Precision@10 by search criterion</span>
+          <span class="label">Searches that include each criterion</span>
         </figcaption>
         <div id="chart-fields" class="multiples"></div>
         <details class="table-view">
@@ -224,18 +218,15 @@
     </section>
 
     <section class="section">
-      <h2>Checks and limits</h2>
+      <h2>Other results and limitations</h2>
       <ul class="limits">
-        <li>Forty deliberately sloppy searches ("mid dev job philipines fulltime") score 0.997, against 1.000 for the
-          same searches worded cleanly.</li>
-        <li>The test searches were written by an LLM, and the assistant reads them with one. A comparison with
-          searches written by people is still open.</li>
-        <li>The scores measure the first message. Follow-ups and the written answers are not part of the evaluation
-          yet.</li>
-        <li>The job board's own tags are not perfect: a hand check of 48 seniority tags agreed with 88%.</li>
-        <li>Differences between systems come with 95% confidence intervals over searches; keywords plus meaning is
-          not reliably better than meaning alone.</li>
-        <li>An answer costs about $0.002 in API calls. Building and evaluating everything cost about $5.</li>
+        <li>The test searches are written by an LLM and interpreted by an LLM. Searches written by people have not
+          been tested yet.</li>
+        <li>Only the first message is evaluated. Follow-ups and the written recommendations are not.</li>
+        <li>The job board's labels contain errors: in a manual check of 48 seniority labels, 88% were correct.</li>
+        <li>Typos and informal wording have little effect: 40 such searches score 99.7%, against 100% for the same
+          searches written cleanly.</li>
+        <li>An answer costs about $0.002 in API calls. Building and evaluating the system cost about $5.</li>
       </ul>
     </section>
   </main>
