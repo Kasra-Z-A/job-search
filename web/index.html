@@ -36,7 +36,7 @@
       <div id="scroller" class="scroller">
         <div class="column">
           <section id="intro" class="intro">
-            <p class="label">Project demo · 9,458 remote jobs · 13 Oct 2026</p>
+            <p class="label label--accent">Project demo · 9,458 remote jobs · 13 Oct 2026</p>
             <h1>What job are you looking for?</h1>
             <p class="intro__lead">Describe it in your own words. I'll find matching postings, tell you which
               fit best and why, and you can refine as we go.</p>
@@ -50,6 +50,12 @@
           <ol id="thread" class="thread" aria-live="polite"></ol>
         </div>
       </div>
+
+      <a class="side-how" href="#how" aria-label="How it works">
+        <span class="side-how__arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5v14M5 12l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
 
       <div class="composer-bar">
         <form id="composer" class="composer column">
@@ -68,7 +74,7 @@
       <section class="section" aria-labelledby="arch-title">
         <div class="section-head">
           <div>
-            <p class="label">01 / Search</p>
+            <p class="label label--accent">01 / Search</p>
             <h2 id="arch-title">How a search works</h2>
           </div>
           <p class="section-note">The job index is built once per data snapshot. Five steps run for every
@@ -210,26 +216,26 @@
           </svg>
 
           <ol class="arch-list">
-            <li><span class="label">Offline</span><h3>Build the index</h3>
+            <li><span class="label label--accent">Offline</span><h3>Build the index</h3>
               <p>10,000 postings are downloaded from the Himalayas API and non-English postings are removed. Each
                 remaining job gets one row with two parts: its labels (seniority, category, countries, contract type,
                 salary converted to US dollars) and a vector embedded from its title and description. The index holds
                 9,458 jobs.</p></li>
-            <li><span class="label">01 · Understand</span><h3>Convert the request into filters</h3>
+            <li><span class="label label--accent">01 · Understand</span><h3>Convert the request into filters</h3>
               <p>Claude Haiku reads the message for seniority, job category, eligible countries, contract type and
                 minimum salary. It can only pick values that exist in the labels, so it cannot ask for a category no job
                 has. In a follow-up, it adjusts the earlier filters instead of starting over.</p></li>
-            <li><span class="label">02 · Embed</span><h3>Embed the message</h3>
+            <li><span class="label label--accent">02 · Embed</span><h3>Embed the message</h3>
               <p>The message is turned into a vector with the same model used for the jobs, so the two can be
                 compared directly.</p></li>
-            <li><span class="label">03 · Filter</span><h3>Filter on labels</h3>
+            <li><span class="label label--accent">03 · Filter</span><h3>Filter on labels</h3>
               <p>Each job's labels are checked against the filters, and every job that fails one is dropped. For the
                 example search, 42 of 9,458 jobs are left.</p></li>
-            <li><span class="label">04 · Rank</span><h3>Rank by similarity</h3>
+            <li><span class="label label--accent">04 · Rank</span><h3>Rank by similarity</h3>
               <p>The remaining jobs are ordered by how close their vector is to the message's. Jobs that meet every
                 filter come first. Jobs that leave a label empty, such as a posting with no salary, might still match,
                 so they follow as possible matches. The top 20 are passed on.</p></li>
-            <li><span class="label">05 · Answer</span><h3>Recommend jobs</h3>
+            <li><span class="label label--accent">05 · Answer</span><h3>Recommend jobs</h3>
               <p>Claude Haiku reads the 20 descriptions, picks up to six and gives a reason for each. It refers to
                 jobs by number only and the page fills in titles and links from the data, so it cannot invent a job or a
                 link. Any amount it mentions in a reason is checked against the data.</p></li>
@@ -262,7 +268,7 @@
       <section class="section" aria-labelledby="accuracy-title">
         <div class="section-head">
           <div>
-            <p class="label">02 / Evaluation</p>
+            <p class="label label--accent">02 / Evaluation</p>
             <h2 id="accuracy-title">Search accuracy</h2>
           </div>
           <p class="section-note">Share of the top 10 results that meet every criterion of the search
@@ -279,7 +285,7 @@
 
         <div class="columns">
           <div>
-            <p class="label">03 / Test method</p>
+            <p class="label label--accent">03 / Test method</p>
             <h2>How test searches are made</h2>
             <p>Each test search starts from the labels of a real job, for example <code>senior · Developer · open
               to Canada · at least $140k</code>.</p>
@@ -290,7 +296,7 @@
               same searches written cleanly.</p>
           </div>
           <div>
-            <p class="label">04 / Interpretation</p>
+            <p class="label label--accent">04 / Interpretation</p>
             <h2>What the score measures</h2>
             <p>The assistant filters on the same labels the test criteria come from. When Haiku chooses the right
               filters, every result is correct, so the 99% mainly measures that step. It gets the filters exactly
@@ -307,7 +313,7 @@
       <section class="section" aria-labelledby="text-title">
         <div class="section-head">
           <div>
-            <p class="label">05 / Without labels</p>
+            <p class="label label--accent">05 / Without labels</p>
             <h2 id="text-title">Searching postings without labels</h2>
           </div>
         </div>
@@ -333,7 +339,7 @@
 
       <section class="section columns">
         <div>
-          <p class="label">06 / Limitations</p>
+          <p class="label label--accent">06 / Limitations</p>
           <h2>What is not tested yet</h2>
           <ul class="limits">
             <li>The test searches are written and checked by LLMs. Searches written by people have not been tested
@@ -345,7 +351,7 @@
           </ul>
         </div>
         <div>
-          <p class="label">07 / Running costs</p>
+          <p class="label label--accent">07 / Running costs</p>
           <h2>Cost and speed</h2>
           <dl class="facts">
             <div><dt>Time per answer</dt><dd>about 6 s</dd></div>

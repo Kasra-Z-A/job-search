@@ -204,23 +204,16 @@
 	font-size: 11px;
 }
 
-.arch-bubble--user {
-	fill: var(--ink);
-}
-
+/* Both bubbles match the user's bubble in the chat. */
+.arch-bubble--user,
 .arch-bubble--reply {
-	fill: var(--rust-deep);
+	fill: var(--rust);
 }
 
 .arch-bubble-text {
 	fill: var(--paper);
 	font-family: "Inter Variable", system-ui, sans-serif;
 	font-size: 12.5px;
-}
-
-:root[data-theme="dark"] .arch-bubble--reply + .arch-bubble-text,
-:root[data-theme="dark"] .arch-bubble--reply ~ .arch-bubble-text {
-	fill: #f4f1ea;
 }
 
 .arch-bracket {

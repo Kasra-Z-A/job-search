@@ -139,6 +139,12 @@ a {
 	color: var(--muted);
 }
 
+/* Labels that mark a place (a project's number, a section's number) take the
+   accent; plain metadata stays muted. */
+.label--accent {
+	color: var(--rust);
+}
+
 .pill {
 	display: inline-flex;
 	align-items: center;
@@ -165,6 +171,18 @@ a {
 .pill--solid:hover {
 	background: var(--rust);
 	border-color: var(--rust);
+}
+
+/* The main action on a card or form: rust at rest, ink on hover. */
+.pill--accent {
+	background: var(--rust);
+	border-color: var(--rust);
+	color: var(--paper);
+}
+
+.pill--accent:hover {
+	background: var(--ink);
+	border-color: var(--ink);
 }
 
 .pill--ghost:hover {

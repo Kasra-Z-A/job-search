@@ -7,6 +7,7 @@ html {
 }
 
 .chat {
+	position: relative;
 	height: calc(100dvh - var(--topbar-h, 5.2rem));
 	display: flex;
 	flex-direction: column;
@@ -90,7 +91,7 @@ html {
 	max-width: min(85%, 40rem);
 	padding: 0.65rem 1.05rem;
 	border-radius: 1.25rem 1.25rem 0.35rem 1.25rem;
-	background: var(--ink);
+	background: var(--rust);
 	color: var(--paper);
 	line-height: 1.45;
 	overflow-wrap: anywhere;
@@ -302,16 +303,16 @@ html {
 	display: grid;
 	place-items: center;
 	border-radius: 50%;
-	border: 1px solid var(--ink);
-	background: var(--ink);
+	border: 1px solid var(--rust);
+	background: var(--rust);
 	color: var(--paper);
 	cursor: pointer;
 	transition: background 0.25s var(--ease), border-color 0.25s var(--ease), opacity 0.25s var(--ease);
 }
 
 .composer .send:hover:not(:disabled) {
-	background: var(--rust);
-	border-color: var(--rust);
+	background: var(--ink);
+	border-color: var(--ink);
 }
 
 .composer .send:disabled {
@@ -328,4 +329,40 @@ html {
 .composer-note a {
 	text-decoration: none;
 	border-bottom: 1px solid var(--line);
+}
+
+/* --- side link to how it works ------------------------------------------- */
+
+/* A round arrow at the left edge, halfway down the chat: the same jump as the
+   "How it works" link in the top bar. Only where the margin beside the chat
+   column leaves room for it; the top bar link covers narrow screens. */
+.side-how {
+	position: absolute;
+	top: 50%;
+	left: var(--gutter);
+	transform: translateY(-50%);
+	display: none;
+}
+
+.side-how__arrow {
+	width: 2.25rem;
+	height: 2.25rem;
+	display: grid;
+	place-items: center;
+	border-radius: 50%;
+	border: 1px solid var(--rust);
+	color: var(--rust);
+	transition: background 0.25s var(--ease), color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+
+.side-how:hover .side-how__arrow {
+	background: var(--rust);
+	color: var(--paper);
+	transform: translateY(3px);
+}
+
+@media (min-width: 1180px) {
+	.side-how {
+		display: block;
+	}
 }
