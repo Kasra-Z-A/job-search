@@ -143,6 +143,50 @@ function contextParam() {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
+// The chat is one screen tall under the sticky top bar; its height needs the
+// bar's real height, which changes with the font size and the screen width.
+function measureTopbar() {
+  document.documentElement.style.setProperty("--topbar-h", `${$(".topbar").offsetHeight}px`);
+}
+measureTopbar();
+window.addEventListener("resize", measureTopbar);
+
+// Links to #chat and #how glide the page over SCROLL_MS. The browser's own
+// smooth scrolling is too quick to follow a full screen of movement.
+const SCROLL_MS = 1400;
+const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+
+function glideTo(target) {
+  const from = window.scrollY;
+  const to = from + target.getBoundingClientRect().top - $(".topbar").offsetHeight;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    window.scrollTo({ top: to, behavior: "instant" });
+    return;
+  }
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min((now - start) / SCROLL_MS, 1);
+    window.scrollTo({ top: from + (to - from) * easeInOut(t), behavior: "instant" });
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+document.addEventListener("click", (event) => {
+  const link = event.target.closest('a[href="#chat"], a[href="#how"]');
+  if (!link) return;
+  event.preventDefault();
+  glideTo($(link.getAttribute("href")));
+  history.replaceState(null, "", link.getAttribute("href"));
+});
+
+// Scroll inside the thread only. scrollIntoView would also scroll the page
+// and push the chat up under the top bar.
+function scrollToMessage(msg) {
+  const scroller = $("#scroller");
+  scroller.scrollTop += msg.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+}
+
 function scrollToEnd() {
   const scroller = $("#scroller");
   scroller.scrollTop = scroller.scrollHeight;
@@ -193,7 +237,7 @@ async function send(message) {
     renderReply(msg, data);
     if (turns.length === 0) history.replaceState(null, "", `?q=${encodeURIComponent(message)}`);
     turns.push({ q: message, filters: data.filters, picks: data.picks.map((p) => p.id) });
-    msg.scrollIntoView({ block: "start" });
+    scrollToMessage(msg);
   } catch (exc) {
     renderError(msg, exc.message === "Failed to fetch" ? "Search is unavailable right now. Try again in a moment." : exc.message);
     scrollToEnd();

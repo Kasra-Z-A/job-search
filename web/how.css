@@ -1,4 +1,4 @@
-/* "How it works": the website's page rhythm, metrics and timeline steps. */
+/* "How it works", below the chat: the website's page rhythm, metrics and the diagram. */
 
 :root {
 	--bar-other: #c4b8a6;
@@ -8,9 +8,10 @@
 	--bar-other: #3b404b;
 }
 
+/* Same width as the chat's column, so both halves of the page line up. */
 .wrap {
 	width: 100%;
-	max-width: 62rem;
+	max-width: 64rem;
 	margin-inline: auto;
 	padding-inline: var(--gutter);
 }
@@ -23,12 +24,12 @@
 	align-items: flex-start;
 }
 
-.hero h1 {
+.hero h2 {
 	font-size: var(--step-h1);
 	max-width: 14ch;
 }
 
-.hero h1 em {
+.hero h2 em {
 	color: var(--rust);
 }
 
@@ -93,12 +94,11 @@
    the narrow-screen version and what screen readers get at every width. */
 
 /* Wider than the text column, like a wide image, so the drawing renders near
-   its natural size instead of shrinking its labels. The drawing is a single
-   column, so it stops at its natural width. */
+   its natural size instead of shrinking its labels. */
 .arch {
 	position: relative;
 	left: 50%;
-	width: min(calc(100vw - 2 * var(--gutter)), 60rem);
+	width: min(calc(100vw - 2 * var(--gutter)), 93rem);
 	transform: translateX(-50%);
 	margin: 2rem 0 0;
 	padding: clamp(1.1rem, 2.5vw, 1.75rem);
@@ -110,7 +110,7 @@
 .arch-svg {
 	display: block;
 	width: 100%;
-	max-width: 880px;
+	max-width: 1430px;
 	margin: 0 auto;
 	height: auto;
 }

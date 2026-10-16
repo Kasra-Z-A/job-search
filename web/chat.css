@@ -1,21 +1,26 @@
-/* The chat: top bar, a scrolling thread, and the composer pinned below. */
+/* The chat fills the first screen below the top bar: a scrolling thread with
+   the composer pinned under it. How it works follows below, one screen down.
+   --topbar-h is measured by chat.js; the fallback is the bar's usual height. */
 
-.chat-page {
-	height: 100dvh;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
+html {
+	scroll-behavior: smooth;
 }
 
-.chat-page .topbar {
-	position: relative;
-	flex: none;
+.chat {
+	height: calc(100dvh - var(--topbar-h, 5.2rem));
+	display: flex;
+	flex-direction: column;
+}
+
+#chat,
+#how {
+	scroll-margin-top: var(--topbar-h, 5.2rem);
 }
 
 .scroller {
 	flex: 1;
+	min-height: 0;
 	overflow-y: auto;
-	overscroll-behavior: contain;
 	scroll-behavior: smooth;
 }
 
