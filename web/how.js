@@ -47,8 +47,9 @@ function barPath(x, y, width, height, r = 4) {
          `V${y + height - radius} Q${x + w},${y + height} ${x + w - radius},${y + height} H${x} Z`;
 }
 
-function systemsChart(systems) {
-  const W = 760, right = W - 56, row = 50, barH = 20;
+// Drawn at the container's width, so labels stay at their set size.
+function systemsChart(systems, width) {
+  const W = Math.max(width, 320), right = W - 56, row = 50, barH = 20;
   const H = systems.length * row + 26;
   const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Precision at 10 by search system" });
   for (const t of [0, 0.25, 0.5, 0.75, 1]) {
@@ -114,11 +115,8 @@ function table(target, headers, rows) {
 
 async function main() {
   const results = await (await fetch("results.json")).json();
-  const demo = results.systems.find((s) => s.name === "filtered");
-  $("#m-precision").textContent = pct(demo["precision@10"]);
-  $("#m-queries").textContent = results.queries.toLocaleString("en-US");
-
-  $("#chart-systems").replaceChildren(systemsChart(results.systems));
+  const systemsTarget = $("#chart-systems");
+  systemsTarget.replaceChildren(systemsChart(results.systems, systemsTarget.clientWidth));
   table($("#table-systems"), ["System", "Precision@10", "nDCG@10", "Recall@100"],
     results.systems.map((s) => [s.label, s["precision@10"].toFixed(3), s["ndcg@10"].toFixed(3), s["recall@100"].toFixed(3)]));
 

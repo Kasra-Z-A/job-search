@@ -37,8 +37,8 @@
         <div class="column">
           <section id="intro" class="intro">
             <p class="label">Project demo · 9,458 remote jobs · 13 Oct 2026</p>
-            <h1>What job are you <em>looking for?</em></h1>
-            <p class="intro__lead">Describe it the way you would say it. I'll find matching postings, tell you which
+            <h1>What job are you looking for?</h1>
+            <p class="intro__lead">Describe it in your own words. I'll find matching postings, tell you which
               fit best and why, and you can refine as we go.</p>
             <div class="suggestions" aria-label="Examples">
               <button type="button" class="pill pill--ghost" data-q="senior data science jobs open to people in Germany, at least $90k">Senior data science in Germany, $90k+</button>
@@ -65,27 +65,20 @@
     </section>
 
     <div id="how" class="wrap how">
-      <section class="hero">
-        <p class="label">How it works</p>
-        <h2>Searching remote jobs in <em>plain language</em></h2>
-        <p class="lead">You describe the job you want in your own words. The assistant converts the request into
-          filters, finds matching jobs among 9,458 remote postings, and recommends the best fits with a reason for each.</p>
-        <dl class="metrics">
-          <div class="metric"><dd class="metric__value" id="m-precision">99%</dd><dt class="label">of top-10 results match every criterion</dt></div>
-          <div class="metric"><dd class="metric__value">98%</dd><dt class="label">of searches converted to the correct filters</dt></div>
-          <div class="metric"><dd class="metric__value" id="m-queries">1,464</dd><dt class="label">test searches</dt></div>
-          <div class="metric"><dd class="metric__value">~6 s</dd><dt class="label">per answer</dt></div>
-        </dl>
-        <p><a class="pill pill--solid" href="#chat">Back to the search</a></p>
-      </section>
-
       <section class="section" aria-labelledby="arch-title">
-        <p class="label">System</p>
-        <h2 id="arch-title">How a search runs</h2>
-        <p class="prose">The job index is built once per data snapshot. It has one row per job with two parts: the
-          labels from the Himalayas fields (seniority, category, countries, contract type, salary) and a vector embedded
-          from the title and description. For each message, Haiku converts it into filters, the labels decide which
-          jobs qualify, the vectors put those jobs in order, and Haiku picks the best of them.</p>
+        <div class="section-head">
+          <div>
+            <p class="label">01 / Search</p>
+            <h2 id="arch-title">How a search works</h2>
+          </div>
+          <p class="section-note">The job index is built once per data snapshot. Five steps run for every
+            message.</p>
+        </div>
+        <p class="intro-text">Every posting on Himalayas comes with labels for seniority, category, eligible
+          countries, contract type and salary. The search uses these labels for the hard requirements in a message
+          and the posting text for everything else. Claude Haiku turns the message into label filters, the filters
+          remove jobs that don't qualify, and the remaining jobs are ranked by how similar their text is to the
+          message.</p>
 
         <figure class="arch">
           <svg class="arch-svg" viewBox="0 0 1430 420" aria-hidden="true" focusable="false">
@@ -211,7 +204,7 @@
 
             <!-- what the evaluation covers -->
             <path class="arch-bracket" d="M190 374 V384 H1025 V374"/>
-            <text class="arch-measured" x="607" y="406" text-anchor="middle">MEASURED · PRECISION@10 0.993 · 1,464 TEST SEARCHES</text>
+            <text class="arch-measured" x="607" y="406" text-anchor="middle">MEASURED IN SECTION 02</text>
             <path class="arch-bracket arch-bracket--open" d="M1050 374 V384 H1240 V374"/>
             <text class="arch-unmeasured" x="1145" y="406" text-anchor="middle">NOT YET MEASURED</text>
           </svg>
@@ -223,39 +216,60 @@
                 salary converted to US dollars) and a vector embedded from its title and description. The index holds
                 9,458 jobs.</p></li>
             <li><span class="label">01 · Understand</span><h3>Convert the request into filters</h3>
-              <p>Claude Haiku extracts seniority, job category, eligible countries, contract type and minimum salary.
-                It can only choose values that occur in the index's labels. In a follow-up, it updates these filters
-                using the earlier conversation.</p></li>
+              <p>Claude Haiku reads the message for seniority, job category, eligible countries, contract type and
+                minimum salary. It can only pick values that exist in the labels, so it cannot ask for a category no job
+                has. In a follow-up, it adjusts the earlier filters instead of starting over.</p></li>
             <li><span class="label">02 · Embed</span><h3>Embed the message</h3>
               <p>The message is turned into a vector with the same model used for the jobs, so the two can be
-                compared.</p></li>
+                compared directly.</p></li>
             <li><span class="label">03 · Filter</span><h3>Filter on labels</h3>
               <p>Each job's labels are checked against the filters, and every job that fails one is dropped. For the
                 example search, 42 of 9,458 jobs are left.</p></li>
             <li><span class="label">04 · Rank</span><h3>Rank by similarity</h3>
-              <p>The remaining jobs are ordered by how close their vector is to the message's. Jobs that meet every filter come first; jobs with a missing label, such as an unstated
-                salary, come after them. The top 20 are passed on.</p></li>
+              <p>The remaining jobs are ordered by how close their vector is to the message's. Jobs that meet every
+                filter come first. Jobs that leave a label empty, such as a posting with no salary, might still match,
+                so they follow as possible matches. The top 20 are passed on.</p></li>
             <li><span class="label">05 · Answer</span><h3>Recommend jobs</h3>
-              <p>Claude Haiku selects up to six of the 20 jobs and gives a reason for each. It refers to jobs by
-                number only; titles, links and details are taken from the index, and any amount in a reason is checked
-                against the data.</p></li>
+              <p>Claude Haiku reads the 20 descriptions, picks up to six and gives a reason for each. It refers to
+                jobs by number only and the page fills in titles and links from the data, so it cannot invent a job or a
+                link. Any amount it mentions in a reason is checked against the data.</p></li>
           </ol>
         </figure>
+
+        <div class="columns">
+          <div>
+            <h3>How filters are chosen</h3>
+            <p>Haiku reads the message for seniority, category, eligible countries, contract type and a minimum
+              salary. It can only choose values that exist in the index, so a filter never asks for a category no
+              job has.</p>
+            <p>Salaries are converted to US dollars before they are compared. In a follow-up message, Haiku edits
+              the previous filters instead of starting over.</p>
+          </div>
+          <div>
+            <h3>How results are ordered</h3>
+            <p>Jobs that meet every filter come first, sorted by how close their vector is to the message's. A vector
+              is a list of numbers from an embedding model; texts with similar meaning get similar vectors.</p>
+            <p>Jobs with a missing label, such as a posting with no salary, cannot be ruled out. They follow as
+              possible matches. Haiku reads the top 20 descriptions and recommends up to six, with a reason for
+              each.</p>
+            <p class="note">Haiku refers to jobs by number only. Titles, links and details come from the index, and
+              any amount in a reason is checked against the data, so a recommendation cannot point to a job that
+              doesn't exist.</p>
+          </div>
+        </div>
       </section>
 
-      <section class="section">
-        <p class="label">Evaluation</p>
-        <h2>How the search is evaluated</h2>
-        <p class="prose">Each test search is generated from a real job's fields, for example <em>senior · Developer ·
-          open to Canada · at least $140k</em>. One LLM rewrites the fields as a plain-language request, and a second
-          LLM checks that the request matches them. Because the criteria are known, a result counts as correct if it
-          meets all of them. Each system is scored by precision@10: the share of its top 10 results that are correct.</p>
+      <section class="section" aria-labelledby="accuracy-title">
+        <div class="section-head">
+          <div>
+            <p class="label">02 / Evaluation</p>
+            <h2 id="accuracy-title">Search accuracy</h2>
+          </div>
+          <p class="section-note">Share of the top 10 results that meet every criterion of the search
+            (precision@10), averaged over 1,464 test searches.</p>
+        </div>
 
         <figure class="figure">
-          <figcaption>
-            <span class="figure__title">Share of the top 10 results that match every criterion</span>
-            <span class="label">Precision@10 · mean over 1,464 test searches</span>
-          </figcaption>
           <div id="chart-systems" class="chart"></div>
           <details class="table-view">
             <summary class="label">Show as table</summary>
@@ -263,44 +277,84 @@
           </details>
         </figure>
 
-        <h3 class="subhead">Interpreting the 99%</h3>
-        <p class="prose">The assistant filters on the same fields the test criteria come from, so when it converts a
-          request correctly, every result qualifies. The score therefore mainly measures that conversion, which is
-          exact for 98% of test searches. Most errors involve "management", which the job board uses both as a job
-          category and as a seniority level. The test does not measure how well a job matches the topic within a broad
-          category such as "Developer"; the answer step is meant to handle that.</p>
-
-        <h3 class="subhead">Without structured fields</h3>
-        <p class="prose">Many job sites have only the posting text. To test this case, an LLM reads each description and
-          records the fields it states. This more than doubles precision compared with meaning search, but stays well
-          below the version with structured fields because descriptions often leave the information out. Of the jobs
-          with a salary, 85% state it in the description; for location the share is about half, and for contract type
-          a third.</p>
-
-        <figure class="figure">
-          <figcaption>
-            <span class="figure__title">Precision@10 by search criterion</span>
-            <span class="label">Searches that include each criterion</span>
-          </figcaption>
-          <div id="chart-fields" class="multiples"></div>
-          <details class="table-view">
-            <summary class="label">Show as table</summary>
-            <table id="table-fields"></table>
-          </details>
-        </figure>
+        <div class="columns">
+          <div>
+            <p class="label">03 / Test method</p>
+            <h2>How test searches are made</h2>
+            <p>Each test search starts from the labels of a real job, for example <code>senior · Developer · open
+              to Canada · at least $140k</code>.</p>
+            <p>One LLM call writes the labels as a request a person might type. A second call checks that the
+              request asks for exactly those criteria. A result counts as correct if its labels meet every
+              criterion, which gives an answer key for every search without labelling jobs by hand.</p>
+            <p>Typos and casual wording barely change the score: 40 such searches score 99.7%, against 100% for the
+              same searches written cleanly.</p>
+          </div>
+          <div>
+            <p class="label">04 / Interpretation</p>
+            <h2>What the score measures</h2>
+            <p>The assistant filters on the same labels the test criteria come from. When Haiku chooses the right
+              filters, every result is correct, so the 99% mainly measures that step. It gets the filters exactly
+              right for 98% of test searches.</p>
+            <p>Most errors involve "management", which Himalayas uses both as a category and as a seniority
+              level.</p>
+            <p class="note">The test does not check how well a job fits within a broad category: any Developer job
+              counts as correct for a request about backend Python. The ranking and the recommendations are not
+              measured yet.</p>
+          </div>
+        </div>
       </section>
 
-      <section class="section">
-        <h2>Other results and limitations</h2>
-        <ul class="limits">
-          <li>The test searches are written by an LLM and interpreted by an LLM. Searches written by people have not
-            been tested yet.</li>
-          <li>Only the first message is evaluated. Follow-ups and the written recommendations are not.</li>
-          <li>The job board's labels contain errors: in a manual check of 48 seniority labels, 88% were correct.</li>
-          <li>Typos and informal wording have little effect: 40 such searches score 99.7%, against 100% for the same
-            searches written cleanly.</li>
-          <li>An answer costs about $0.002 in API calls. Building and evaluating the system cost about $5.</li>
-        </ul>
+      <section class="section" aria-labelledby="text-title">
+        <div class="section-head">
+          <div>
+            <p class="label">05 / Without labels</p>
+            <h2 id="text-title">Searching postings without labels</h2>
+          </div>
+        </div>
+        <div class="split">
+          <div>
+            <p>Many job sites only have the posting text. To test this case, an LLM read each description and
+              recorded the seniority, category, countries, contract type and salary it states. The assistant then
+              filtered on those values instead of the Himalayas labels.</p>
+            <p>Precision rises from 17% with meaning search alone to 41%, but stays far below 99%. Descriptions
+              often leave things out: of the jobs with a salary, 85% state it in the text. About half say where they
+              hire, and a third state the contract type.</p>
+          </div>
+          <figure class="figure">
+            <figcaption class="label">Precision@10 · searches that include each criterion</figcaption>
+            <div id="chart-fields" class="multiples"></div>
+            <details class="table-view">
+              <summary class="label">Show as table</summary>
+              <table id="table-fields"></table>
+            </details>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section columns">
+        <div>
+          <p class="label">06 / Limitations</p>
+          <h2>What is not tested yet</h2>
+          <ul class="limits">
+            <li>The test searches are written and checked by LLMs. Searches written by people have not been tested
+              yet.</li>
+            <li>Only the first message of a conversation is tested, not follow-ups or the written
+              recommendations.</li>
+            <li>The job board's labels contain errors: a manual check of 48 seniority labels found 88% correct. The
+              test treats the labels as correct, so these errors do not lower the score.</li>
+          </ul>
+        </div>
+        <div>
+          <p class="label">07 / Running costs</p>
+          <h2>Cost and speed</h2>
+          <dl class="facts">
+            <div><dt>Time per answer</dt><dd>about 6 s</dd></div>
+            <div><dt>API cost per answer</dt><dd>about $0.002</dd></div>
+            <div><dt>Building and testing the system</dt><dd>about $5</dd></div>
+            <div><dt>Jobs in the index</dt><dd>9,458</dd></div>
+            <div><dt>Data snapshot</dt><dd>13 Oct 2026</dd></div>
+          </dl>
+        </div>
       </section>
     </div>
   </main>

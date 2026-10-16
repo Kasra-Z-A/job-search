@@ -52,10 +52,6 @@ html {
 	font-size: var(--step-h1);
 }
 
-.intro h1 em {
-	color: var(--rust);
-}
-
 .intro__lead {
 	max-width: 34rem;
 	color: var(--ink-soft);
@@ -68,6 +64,10 @@ html {
 	flex-wrap: wrap;
 	gap: 0.5rem;
 	margin-top: 0.6rem;
+}
+
+.suggestions .pill--ghost:hover {
+	border-color: var(--rust);
 }
 
 /* --- thread -------------------------------------------------------------- */
@@ -282,6 +282,7 @@ html {
 	color: var(--ink);
 	font: inherit;
 	line-height: 1.45;
+	caret-color: var(--rust);
 	transition: border-color 0.25s var(--ease);
 }
 
@@ -291,7 +292,7 @@ html {
 
 .composer textarea:focus {
 	outline: none;
-	border-color: var(--ink-soft);
+	border-color: color-mix(in srgb, var(--rust) 55%, var(--line));
 }
 
 .composer .send {
