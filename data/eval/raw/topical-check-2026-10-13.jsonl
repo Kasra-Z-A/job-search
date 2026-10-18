@@ -1,0 +1,81 @@
+{"custom_id": "s0008", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0019", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0054", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0062", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0130", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0131", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0144", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0204", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0208", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0218", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0242", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0251", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0253", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0272", "status": "succeeded", "output": {"problem": "The topic includes two specifics, 'strategic account' and 'healthcare', but the rules allow at most one specific beyond the constraints.", "verdict": "mismatch"}}
+{"custom_id": "s0274", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0294", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0297", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0306", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0312", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0373", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0449", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0458", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0459", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0469", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0476", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0478", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0479", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0502", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0505", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0511", "status": "succeeded", "output": {"problem": "Constraints check: seniority Leadership is expressed via 'head of' and 'VP level' (matches). Category Developer is expressed as 'engineering leadership roles' (engineering (software) jobs wording, acceptable). Open to candidates in South Africa is present. Employment type Full Time is present as 'full-time'. Salary is not a constraint here. Topic: the query names no skill, tool, or domain beyond the category itself, so there is no topic beyond the constraints. The request for engineering leadership roles lacks a specific topic, which is required (exactly one topic). Therefore the query fails the requirement of one topic.", "verdict": "mismatch"}}
+{"custom_id": "s0513", "status": "succeeded", "output": {"problem": "The salary is written as \"90k+\" with no currency. The constraint requires exactly $90,000 USD, and in a UK-focused query \"90k\" most naturally reads as pounds, so the amount is not clearly the same USD value.", "verdict": "mismatch"}}
+{"custom_id": "s0534", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0548", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0562", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0571", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0587", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0592", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0595", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0625", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0645", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0650", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0662", "status": "succeeded", "output": {"problem": "The query states the Philippines location and the Customer Service category (customer support), but its topic has two specifics: 'technical' and 'SaaS' (a domain). The rules allow at most one specific in the topic.", "verdict": "mismatch"}}
+{"custom_id": "s0700", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0711", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0719", "status": "succeeded", "output": {"problem": "Constraints: open to UK (query says based in UK, matches), Full Time (query says full-time, matches), minimum salary $30,000 (query says at least $30,000, matches). Topic: content marketing, a narrowing of Content Creator category, one specific domain, fine. No missing constraints, no added requirements. Problem: none.", "verdict": "match"}}
+{"custom_id": "s0769", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0777", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0789", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0790", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0831", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0849", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0861", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0862", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0881", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0887", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0891", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0897", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0900", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0912", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s0971", "status": "succeeded", "output": {"problem": "The query has the right seniority (director = Leadership), employment type (full-time) and exact minimum salary ($70,000). However, it names no kind of work, only 'at a nonprofit', which describes the employer type rather than a job category, so the topic requirement is unmet and the nonprofit condition is an added requirement.", "verdict": "mismatch"}}
+{"custom_id": "s1049", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1080", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1118", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1155", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1180", "status": "succeeded", "output": {"problem": "The query adds two specifics, 'valuation' and 'financial modelling', where the rules allow at most one specific topic beyond the constraints. The constraints themselves (Finance, Contractor via freelance/contract) are matched.", "verdict": "mismatch"}}
+{"custom_id": "s1187", "status": "succeeded", "output": {"problem": "The query asks for a finance manager role, which matches Manager seniority and Finance category. It states open to candidates in the US ('I'm based in the US') and minimum salary of at least $90,000. Topic is financial planning, a single specific narrowing Finance. No missing or changed constraints, no extra requirements. 'Finance manager' combines manager seniority with finance category, consistent with constraints.", "verdict": "match"}}
+{"custom_id": "s1189", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1199", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1210", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1221", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1226", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1293", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1301", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1393", "status": "succeeded", "output": {"problem": "The query's topic names two specifics, accounts receivable and invoicing, but the rules allow at most one specific alongside the constraints.", "verdict": "mismatch"}}
+{"custom_id": "s1398", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1400", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1439", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1442", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1452", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1476", "status": "succeeded", "output": {"problem": "none", "verdict": "match"}}
+{"custom_id": "s1499", "status": "succeeded", "output": {"problem": "The query has the three constraints correctly (mid-level, based in El Salvador, freelance as Contractor) and a topic of interpreter work. However, it adds a second specific beyond the one allowed, namely the languages Spanish and English. The topic may include at most one specific, and the language skills make two.", "verdict": "mismatch"}}

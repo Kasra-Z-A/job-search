@@ -41,29 +41,16 @@
 	margin-bottom: 0;
 }
 
-.section-note {
-	max-width: 36ch;
-	font-size: var(--step-small);
-	color: var(--muted);
-}
-
 .intro-text {
 	max-width: 80ch;
 	font-size: 0.9rem;
 	color: var(--ink-soft);
 }
 
-.columns,
-.split {
+.columns {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 6rem;
-}
-
-.split {
-	grid-template-columns: 1fr 1.25fr;
-	gap: 4rem;
-	align-items: start;
 }
 
 .section > .columns {
@@ -75,16 +62,11 @@
 	margin-bottom: 0.4rem;
 }
 
-.columns p:not(.label),
-.split p:not(.label) {
+.columns p:not(.label) {
 	max-width: 53ch;
 	margin-top: 1rem;
 	font-size: 0.9rem;
 	color: var(--ink-soft);
-}
-
-.split > div > p:first-child {
-	margin-top: 0;
 }
 
 .note {
@@ -104,8 +86,7 @@
 		align-items: start;
 	}
 
-	.columns,
-	.split {
+	.columns {
 		grid-template-columns: 1fr;
 		gap: 3rem;
 	}
@@ -326,10 +307,6 @@
 	margin-bottom: 1.25rem;
 }
 
-.split .figure {
-	margin-top: 0;
-}
-
 .chart svg {
 	display: block;
 	width: 100%;
@@ -384,138 +361,38 @@
 	outline: none;
 }
 
-/* Small multiples: one row per field, one column per system, each with its
-   own bar on a shared 0–100% scale. Columns carry identity, not colour. */
-.multiples {
-	display: grid;
-	grid-template-columns: minmax(6.5rem, 0.8fr) repeat(3, minmax(0, 1fr));
-	gap: 0.7rem 1rem;
-	align-items: center;
-}
-
-.multiples .head {
-	align-self: end;
-	line-height: 1.35;
-}
-
-.multiples .head--demo {
-	color: var(--rust);
-}
-
-.multiples .field {
-	font-size: 0.95rem;
-	color: var(--ink-soft);
-}
-
-.cell {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.cell svg {
-	flex: 1;
-	height: 14px;
-	min-width: 2rem;
-}
-
-.cell .num {
-	width: 2.6rem;
-	text-align: right;
-	font-size: 0.9rem;
-	font-variant-numeric: tabular-nums;
-}
-
-@media (max-width: 560px) {
-	.multiples {
-		grid-template-columns: 5.5rem repeat(3, minmax(0, 1fr));
-		gap: 0.6rem 0.5rem;
-	}
-
-	.cell svg {
-		display: none;
-	}
-}
-
-.table-view {
+.legend {
 	margin-top: 1rem;
 }
 
-.table-view summary {
+.legend summary {
 	cursor: pointer;
 	width: fit-content;
 }
 
-.table-view table {
-	margin-top: 0.8rem;
-	border-collapse: collapse;
-	font-size: var(--step-small);
-	color: var(--ink-soft);
+.legend dl {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.25rem 4rem;
+	margin: 1rem 0 0;
 }
 
-.table-view th,
-.table-view td {
-	padding: 0.35rem 1.25rem 0.35rem 0;
-	text-align: left;
-	border-bottom: 1px solid var(--line);
+.legend dt {
+	font-weight: 600;
+	font-size: 0.95rem;
 }
 
-.table-view td.num {
-	text-align: right;
-	font-variant-numeric: tabular-nums;
-}
-
-.limits {
+.legend dd {
+	margin: 0.3rem 0 0;
 	max-width: 53ch;
-	margin: 0;
-	padding: 0;
-	list-style: none;
 	font-size: 0.9rem;
 	color: var(--ink-soft);
 }
 
-.limits li {
-	position: relative;
-	padding: 0.8rem 0 0.8rem 1.4rem;
-	border-top: 1px solid var(--line);
-}
-
-.limits li:last-child {
-	border-bottom: 1px solid var(--line);
-}
-
-.limits li::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	top: 1.35rem;
-	width: 7px;
-	height: 7px;
-	border-radius: 50%;
-	background: var(--rust);
-}
-
-.facts {
-	margin: 0;
-	font-size: 0.9rem;
-}
-
-.facts div {
-	display: flex;
-	justify-content: space-between;
-	gap: 1rem;
-	padding: 0.85rem 0;
-	border-bottom: 1px solid var(--line);
-}
-
-.facts dt {
-	color: var(--ink-soft);
-}
-
-.facts dd {
-	margin: 0;
-	color: var(--ink);
-	font-variant-numeric: tabular-nums;
+@media (max-width: 760px) {
+	.legend dl {
+		grid-template-columns: 1fr;
+	}
 }
 
 .foot {

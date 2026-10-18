@@ -1,80 +1,48 @@
 {
  "snapshot": "2026-10-13",
- "queries": 1464,
+ "queries": 309,
+ "pairs_graded": 10967,
  "systems": [
-  {
-   "name": "random",
-   "label": "Random order",
-   "precision@10": 0.0084,
-   "ndcg@10": 0.0081,
-   "recall@100": 0.0105
-  },
   {
    "name": "bm25",
    "label": "Keyword search (BM25)",
-   "precision@10": 0.1126,
-   "ndcg@10": 0.1202,
-   "recall@100": 0.113
-  },
-  {
-   "name": "embeddings",
-   "label": "Meaning search (embeddings)",
-   "precision@10": 0.174,
-   "ndcg@10": 0.1822,
-   "recall@100": 0.1858
+   "ndcg@10": 0.2424,
+   "good@10": 0.0984,
+   "any_good@10": 0.5437
   },
   {
    "name": "hybrid",
-   "label": "Keywords + meaning",
-   "precision@10": 0.1809,
-   "ndcg@10": 0.196,
-   "recall@100": 0.1757
+   "label": "Hybrid search (BM25 + embeddings)",
+   "ndcg@10": 0.34,
+   "good@10": 0.1489,
+   "any_good@10": 0.6505
+  },
+  {
+   "name": "embeddings",
+   "label": "Semantic search (embeddings)",
+   "ndcg@10": 0.3441,
+   "good@10": 0.1631,
+   "any_good@10": 0.6731
   },
   {
    "name": "textonly",
-   "label": "LLM, posting text only",
-   "precision@10": 0.4101,
-   "ndcg@10": 0.4238,
-   "recall@100": 0.355
+   "label": "Filtered semantic search, labels extracted from text",
+   "ndcg@10": 0.4523,
+   "good@10": 0.2094,
+   "any_good@10": 0.7023
   },
   {
    "name": "filtered",
-   "label": "LLM filters + meaning (this assistant)",
-   "precision@10": 0.9925,
-   "ndcg@10": 0.993,
-   "recall@100": 0.9919
+   "label": "Filtered semantic search, Himalayas labels (this assistant)",
+   "ndcg@10": 0.8019,
+   "good@10": 0.3492,
+   "any_good@10": 0.9385
   }
  ],
- "by_field": [
-  {
-   "field": "Salary",
-   "embeddings": 0.1628,
-   "textonly": 0.5693,
-   "filtered": 0.9938
-  },
-  {
-   "field": "Category",
-   "embeddings": 0.1837,
-   "textonly": 0.4377,
-   "filtered": 0.9945
-  },
-  {
-   "field": "Seniority",
-   "embeddings": 0.1543,
-   "textonly": 0.3805,
-   "filtered": 0.9897
-  },
-  {
-   "field": "Contract type",
-   "embeddings": 0.1561,
-   "textonly": 0.3512,
-   "filtered": 0.9904
-  },
-  {
-   "field": "Location",
-   "embeddings": 0.1507,
-   "textonly": 0.3135,
-   "filtered": 0.991
-  }
- ]
+ "checks": {
+  "second_judge_kappa": 0.8698,
+  "second_judge_exact": 0.8333,
+  "blind_kappa": 0.7095,
+  "random_pairs_zero": 0.96
+ }
 }

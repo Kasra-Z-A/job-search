@@ -1,0 +1,55 @@
+{
+  "queries": 309,
+  "scored": 309,
+  "pairs_graded": 10967,
+  "grades": {
+    "0": 6533,
+    "1": 2832,
+    "2": 1602
+  },
+  "systems": {
+    "bm25": {
+      "ndcg@10": 0.2424,
+      "good@10": 0.0984,
+      "any_good@10": 0.5437
+    },
+    "embeddings": {
+      "ndcg@10": 0.3441,
+      "good@10": 0.1631,
+      "any_good@10": 0.6731
+    },
+    "hybrid": {
+      "ndcg@10": 0.34,
+      "good@10": 0.1489,
+      "any_good@10": 0.6505
+    },
+    "filtered": {
+      "ndcg@10": 0.8019,
+      "good@10": 0.3492,
+      "any_good@10": 0.9385
+    },
+    "textonly": {
+      "ndcg@10": 0.4523,
+      "good@10": 0.2094,
+      "any_good@10": 0.7023
+    }
+  },
+  "filtered_vs_embeddings_ndcg": {
+    "difference": 0.4578,
+    "ci95": [
+      0.4226,
+      0.4925
+    ],
+    "result": true,
+    "queries": 309
+  },
+  "filtered_vs_textonly_ndcg": {
+    "difference": 0.3496,
+    "ci95": [
+      0.3122,
+      0.3871
+    ],
+    "result": true,
+    "queries": 309
+  }
+}

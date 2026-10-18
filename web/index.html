@@ -77,8 +77,6 @@
             <p class="label label--accent">01 / Search</p>
             <h2 id="arch-title">How a search works</h2>
           </div>
-          <p class="section-note">The job index is built once per data snapshot. Five steps run for every
-            message.</p>
         </div>
         <p class="intro-text">Every posting on Himalayas comes with labels for seniority, category, eligible
           countries, contract type and salary. The search uses these labels for the hard requirements in a message
@@ -242,126 +240,79 @@
           </ol>
         </figure>
 
-        <div class="columns">
-          <div>
-            <h3>How filters are chosen</h3>
-            <p>Haiku reads the message for seniority, category, eligible countries, contract type and a minimum
-              salary. It can only choose values that exist in the index, so a filter never asks for a category no
-              job has.</p>
-            <p>Salaries are converted to US dollars before they are compared. In a follow-up message, Haiku edits
-              the previous filters instead of starting over.</p>
-          </div>
-          <div>
-            <h3>How results are ordered</h3>
-            <p>Jobs that meet every filter come first, sorted by how close their vector is to the message's. A vector
-              is a list of numbers from an embedding model; texts with similar meaning get similar vectors.</p>
-            <p>Jobs with a missing label, such as a posting with no salary, cannot be ruled out. They follow as
-              possible matches. Haiku reads the top 20 descriptions and recommends up to six, with a reason for
-              each.</p>
-            <p class="note">Haiku refers to jobs by number only. Titles, links and details come from the index, and
-              any amount in a reason is checked against the data, so a recommendation cannot point to a job that
-              doesn't exist.</p>
-          </div>
-        </div>
       </section>
 
       <section class="section" aria-labelledby="accuracy-title">
         <div class="section-head">
           <div>
             <p class="label label--accent">02 / Evaluation</p>
-            <h2 id="accuracy-title">Search accuracy</h2>
+            <h2 id="accuracy-title">How good are the results?</h2>
           </div>
-          <p class="section-note">Share of the top 10 results that meet every criterion of the search
-            (precision@10), averaged over 1,464 test searches.</p>
         </div>
+        <p class="intro-text">Five search systems ran on 309 test queries. An LLM judge (Claude Haiku) graded every
+          job in each system's top 10, 10,967 query–job pairs, as a good match, a partial match or no match. Each bar
+          shows nDCG@10: 1.0 means a system ranked the best-graded jobs first, 0 means its top 10 has no match.</p>
 
         <figure class="figure">
           <div id="chart-systems" class="chart"></div>
-          <details class="table-view">
-            <summary class="label">Show as table</summary>
-            <table id="table-systems"></table>
+          <details class="legend">
+            <summary class="label">What the bars mean</summary>
+            <dl>
+              <div><dt>Keyword search (BM25)</dt>
+                <dd>Job postings are ranked by word overlap with the query, with rare words weighted higher. BM25
+                  does not handle synonyms or numeric comparisons such as "at least $140k".</dd></div>
+              <div><dt>Hybrid search (BM25 + embeddings)</dt>
+                <dd>The BM25 and embedding rankings are combined with reciprocal rank fusion. Here the combination
+                  makes no measurable difference to embeddings alone.</dd></div>
+              <div><dt>Semantic search (embeddings)</dt>
+                <dd>Job postings are ranked by cosine similarity between the query embedding and each posting's
+                  embedding (OpenAI text-embedding-3-small). Embeddings match related wording but cannot enforce
+                  seniority, location or salary.</dd></div>
+              <div><dt>Filtered semantic search, labels extracted from text</dt>
+                <dd>An LLM (Claude Haiku) extracts labels from the query: seniority, category, location, contract
+                  type and minimum salary. The same LLM extracted these labels from each posting's text in advance.
+                  Job postings whose labels contradict the query are removed, and the rest are ranked by embedding
+                  similarity. Job postings that leave a label unstated are kept, after the full matches.</dd></div>
+              <div class="legend__demo"><dt>Filtered semantic search, Himalayas labels (this assistant)</dt>
+                <dd>The query labels are extracted the same way but compared with the labels Himalayas stores for
+                  each job posting. This is the system behind the search box above.</dd></div>
+            </dl>
           </details>
         </figure>
 
         <div class="columns">
           <div>
             <p class="label label--accent">03 / Test method</p>
-            <h2>How test searches are made</h2>
-            <p>Each test search starts from the labels of a real job, for example <code>senior · Developer · open
-              to Canada · at least $140k</code>.</p>
-            <p>One LLM call writes the labels as a request a person might type. A second call checks that the
-              request asks for exactly those criteria. A result counts as correct if its labels meet every
-              criterion, which gives an answer key for every search without labelling jobs by hand.</p>
-            <p>Typos and casual wording barely change the score: 40 such searches score 99.7%, against 100% for the
-              same searches written cleanly.</p>
+            <h2>How the test works</h2>
+            <p>Each test query starts from a real posting. Claude Sonnet reads it and writes a request a person
+              might type, with some of the posting's requirements and the kind of work, for example <code>mid-level
+              HR recruiter high-volume hiring $90,000+</code>. Claude Haiku checks every query. Sonnet skipped 38 of 396 postings
+              because their Himalayas labels contradict the description.</p>
+            <p>The judge reads the query, the listing details a job seeker sees on Himalayas and the description.
+              A good match meets every requirement the query states and offers the kind of work it asks for.</p>
+            <p>The assistant puts at least one good match in the top 10 for 94% of queries, against 67% for
+              semantic search alone. Its score stays near 0.80 for every query style and number of requirements,
+              while the other systems fall as requirements are added. Labels extracted from the posting text
+              recover about a quarter of the assistant's gain, because descriptions often leave out salary,
+              location and contract type.</p>
           </div>
           <div>
-            <p class="label label--accent">04 / Interpretation</p>
-            <h2>What the score measures</h2>
-            <p>The assistant filters on the same labels the test criteria come from. When Haiku chooses the right
-              filters, every result is correct, so the 99% mainly measures that step. It gets the filters exactly
-              right for 98% of test searches.</p>
-            <p>Most errors involve "management", which Himalayas uses both as a category and as a seniority
-              level.</p>
-            <p class="note">The test does not check how well a job fits within a broad category: any Developer job
-              counts as correct for a request about backend Python. The ranking and the recommendations are not
-              measured yet.</p>
+            <p class="label label--accent">04 / Checking the judge</p>
+            <h2>How far the grades can be trusted</h2>
+            <p>No person checked the grades. Three tests with other LLM runs show how consistent they are. Claude
+              Sonnet regraded 300 pairs and gave the same grade 83% of the time, a weighted kappa of 0.87. Where
+              they differ, Sonnet is usually stricter, so the scores above are probably slightly high.</p>
+            <p>Without the listing details, the judge agrees with its own grades less (kappa 0.71): it often cannot
+              tell whether a location or salary requirement is met. Of 100 random query–job pairs, it graded 96 as
+              no match and none as a good match.</p>
+            <p class="note">The test queries are written by an LLM from real postings, so every query has at least
+              one match and borrows the posting's wording. Searches written by people, follow-up messages and the
+              written recommendations are not tested. Himalayas' labels contain errors, and the judge relies on
+              them where the description is silent.</p>
           </div>
         </div>
       </section>
 
-      <section class="section" aria-labelledby="text-title">
-        <div class="section-head">
-          <div>
-            <p class="label label--accent">05 / Without labels</p>
-            <h2 id="text-title">Searching postings without labels</h2>
-          </div>
-        </div>
-        <div class="split">
-          <div>
-            <p>Many job sites only have the posting text. To test this case, an LLM read each description and
-              recorded the seniority, category, countries, contract type and salary it states. The assistant then
-              filtered on those values instead of the Himalayas labels.</p>
-            <p>Precision rises from 17% with meaning search alone to 41%, but stays far below 99%. Descriptions
-              often leave things out: of the jobs with a salary, 85% state it in the text. About half say where they
-              hire, and a third state the contract type.</p>
-          </div>
-          <figure class="figure">
-            <figcaption class="label">Precision@10 · searches that include each criterion</figcaption>
-            <div id="chart-fields" class="multiples"></div>
-            <details class="table-view">
-              <summary class="label">Show as table</summary>
-              <table id="table-fields"></table>
-            </details>
-          </figure>
-        </div>
-      </section>
-
-      <section class="section columns">
-        <div>
-          <p class="label label--accent">06 / Limitations</p>
-          <h2>What is not tested yet</h2>
-          <ul class="limits">
-            <li>The test searches are written and checked by LLMs. Searches written by people have not been tested
-              yet.</li>
-            <li>Only the first message of a conversation is tested, not follow-ups or the written
-              recommendations.</li>
-            <li>The job board's labels contain errors: a manual check of 48 seniority labels found 88% correct. The
-              test treats the labels as correct, so these errors do not lower the score.</li>
-          </ul>
-        </div>
-        <div>
-          <p class="label label--accent">07 / Running costs</p>
-          <h2>Cost and speed</h2>
-          <dl class="facts">
-            <div><dt>Time per answer</dt><dd>about 6 s</dd></div>
-            <div><dt>API cost per answer</dt><dd>about $0.002</dd></div>
-            <div><dt>Building and testing the system</dt><dd>about $5</dd></div>
-            <div><dt>Jobs in the index</dt><dd>9,458</dd></div>
-            <div><dt>Data snapshot</dt><dd>13 Oct 2026</dd></div>
-          </dl>
-        </div>
-      </section>
     </div>
   </main>
 

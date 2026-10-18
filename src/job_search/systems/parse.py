@@ -39,6 +39,7 @@ MAX_TOKENS = 4000
 # the account's 500k input tokens per minute.
 WORKERS = 4
 MAX_RETRIES = 8
+TIMEOUT = 60  # seconds; a parse takes ~1 s, so a longer wait is a hung connection
 PARSES_DIR = Path("data/parses")
 LEVELS = sorted(set(QUERY_LEVEL.values()), key=list(QUERY_LEVEL.values()).index)
 FIELDS = ["seniority", "category", "country", "employment_type", "salary_min_usd"]
@@ -186,7 +187,7 @@ def main(argv: list[str] | None = None) -> None:
     jobs = load_jobs(args.normalised)
     queries = load_queries(args.normalised, args.queries)
     out = parses_path(args.normalised, args.queries)
-    parse_all(anthropic.Anthropic(max_retries=MAX_RETRIES), queries, schema(*field_values(jobs)), out)
+    parse_all(anthropic.Anthropic(max_retries=MAX_RETRIES, timeout=TIMEOUT), queries, schema(*field_values(jobs)), out)
 
     rows = {r["spec_id"]: r for r in map(json.loads, out.read_text().splitlines())}
     tokens_in = sum(r["input_tokens"] for r in rows.values())

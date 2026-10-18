@@ -36,17 +36,17 @@ WEB_RESULTS = Path("web/results.json")
 EXCERPT_CHARS = 280
 KEEP = ["id", "title", "company", "published_at", "seniority", "categories", "countries", "worldwide",
         "employment_type", "salary_status", "salary_min_usd", "salary_max_usd"]
-# Systems shown on the page, in order, with the label a visitor reads.
+JUDGED_SET = "topical-v2"
+# Systems shown on the page, in order, with the label a visitor reads. Scores
+# come from the LLM judge on the topical queries (`job_search.judge`); the
+# judge checks ran once, on the first 73 queries' grades.
 SYSTEMS = [
-    ("random", "Random order"),
     ("bm25", "Keyword search (BM25)"),
-    ("embeddings", "Meaning search (embeddings)"),
-    ("hybrid", "Keywords + meaning"),
-    ("textonly", "LLM, posting text only"),
-    ("filtered", "LLM filters + meaning (this assistant)"),
+    ("hybrid", "Hybrid search (BM25 + embeddings)"),
+    ("embeddings", "Semantic search (embeddings)"),
+    ("textonly", "Filtered semantic search, labels extracted from text"),
+    ("filtered", "Filtered semantic search, Himalayas labels (this assistant)"),
 ]
-FIELD_LABELS = {"salary_min_usd": "Salary", "category": "Category", "seniority": "Seniority",
-                "employment_type": "Contract type", "country": "Location"}
 
 
 def excerpt(text: str, limit: int = EXCERPT_CHARS) -> str:
@@ -59,18 +59,17 @@ def slim(job: dict) -> dict:
 
 
 def results_summary(date: str, results_dir: Path = Path("data/results")) -> dict:
-    def load(name):
-        return json.loads((results_dir / f"{name}-{date}.json").read_text())
-
-    summaries = {name: load(name) for name, _ in SYSTEMS}
+    judged = json.loads((results_dir / f"judged.{JUDGED_SET}-{date}.json").read_text())
+    checks = json.loads((results_dir / f"judge-checks.topical-{date}.json").read_text())
     return {
         "snapshot": date,
-        "queries": summaries["filtered"]["overall"]["queries"],
-        "systems": [{"name": name, "label": label, **{m: summaries[name]["overall"][m]
-                     for m in ("precision@10", "ndcg@10", "recall@100")}} for name, label in SYSTEMS],
-        "by_field": [{"field": label, **{name: summaries[name]["slices"][f"field={field}"]["precision@10"]
-                      for name in ("embeddings", "textonly", "filtered")}}
-                     for field, label in FIELD_LABELS.items()],
+        "queries": judged["queries"],
+        "pairs_graded": judged["pairs_graded"],
+        "systems": [{"name": name, "label": label, **judged["systems"][name]} for name, label in SYSTEMS],
+        "checks": {"second_judge_kappa": checks["haiku_vs_second"]["weighted_kappa"],
+                   "second_judge_exact": checks["haiku_vs_second"]["exact_agreement"],
+                   "blind_kappa": checks["haiku_vs_blind"]["weighted_kappa"],
+                   "random_pairs_zero": checks["random_pairs"]["grades"].get("0", 0) / checks["random_pairs"]["pairs"]},
     }
 
 
