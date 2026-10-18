@@ -75,14 +75,14 @@
         <div class="section-head">
           <div>
             <p class="label label--accent">01 / Search</p>
-            <h2 id="arch-title">How a search works</h2>
+            <h2 id="arch-title">How the job search works</h2>
           </div>
         </div>
         <p class="intro-text">Every posting on Himalayas comes with labels for seniority, category, eligible
-          countries, contract type and salary. The search uses these labels for the hard requirements in a message
-          and the posting text for everything else. Claude Haiku turns the message into label filters, the filters
-          remove jobs that don't qualify, and the remaining jobs are ranked by how similar their text is to the
-          message.</p>
+          countries, contract type and salary. The labels are stored alongside the embeddings of the job description
+          for later retrieval. Claude Haiku extracts the labels from the user message, and filters on these labels
+          remove the jobs that don't qualify. The remaining jobs are ranked by how similar their description is to
+          the message.</p>
 
         <figure class="arch">
           <svg class="arch-svg" viewBox="0 0 1430 420" aria-hidden="true" focusable="false">
@@ -249,9 +249,10 @@
             <h2 id="accuracy-title">How good are the results?</h2>
           </div>
         </div>
-        <p class="intro-text">Five search systems ran on 309 test queries. An LLM judge (Claude Haiku) graded every
-          job in each system's top 10, 10,967 query–job pairs, as a good match, a partial match or no match. Each bar
-          shows nDCG@10: 1.0 means a system ranked the best-graded jobs first, 0 means its top 10 has no match.</p>
+        <p class="intro-text">Five search systems were tested on 309 test queries. For each query, an LLM judge
+          (Claude Haiku) graded every job in each system's top 10 as a good match, a partial match or no match,
+          10,967 query–job pairs in total. Each bar shows the system's nDCG@10, a score from 0 to 1: 1 means the
+          best-graded jobs are ranked first, and 0 means none of the top 10 jobs match.</p>
 
         <figure class="figure">
           <div id="chart-systems" class="chart"></div>
@@ -259,23 +260,23 @@
             <summary class="label">What the bars mean</summary>
             <dl>
               <div><dt>Keyword search (BM25)</dt>
-                <dd>Job postings are ranked by word overlap with the query, with rare words weighted higher. BM25
-                  does not handle synonyms or numeric comparisons such as "at least $140k".</dd></div>
+                <dd>Ranks postings by the words they share with the query, with rare words weighted higher. It
+                  misses synonyms and can't compare numbers, such as "at least $140k".</dd></div>
               <div><dt>Hybrid search (BM25 + embeddings)</dt>
-                <dd>The BM25 and embedding rankings are combined with reciprocal rank fusion. Here the combination
-                  makes no measurable difference to embeddings alone.</dd></div>
+                <dd>Combines the BM25 and embedding rankings with reciprocal rank fusion. Here it scores the same
+                  as embeddings alone.</dd></div>
               <div><dt>Semantic search (embeddings)</dt>
-                <dd>Job postings are ranked by cosine similarity between the query embedding and each posting's
-                  embedding (OpenAI text-embedding-3-small). Embeddings match related wording but cannot enforce
-                  seniority, location or salary.</dd></div>
+                <dd>Ranks postings by how similar their embedding is to the query's embedding (OpenAI
+                  text-embedding-3-small). It matches related wording but can't enforce seniority, location or
+                  salary.</dd></div>
               <div><dt>Filtered semantic search, labels extracted from text</dt>
                 <dd>An LLM (Claude Haiku) extracts labels from the query: seniority, category, location, contract
-                  type and minimum salary. The same LLM extracted these labels from each posting's text in advance.
-                  Job postings whose labels contradict the query are removed, and the rest are ranked by embedding
-                  similarity. Job postings that leave a label unstated are kept, after the full matches.</dd></div>
+                  type and minimum salary. The same LLM extracted these labels from each posting's text beforehand.
+                  Postings whose labels contradict the query are removed, and the rest are ranked by embedding
+                  similarity. Postings that don't state a label are kept and shown after the full matches.</dd></div>
               <div class="legend__demo"><dt>Filtered semantic search, Himalayas labels (this assistant)</dt>
-                <dd>The query labels are extracted the same way but compared with the labels Himalayas stores for
-                  each job posting. This is the system behind the search box above.</dd></div>
+                <dd>Extracts the query labels the same way, but compares them with the labels Himalayas stores for
+                  each posting. This is the system behind the search box above.</dd></div>
             </dl>
           </details>
         </figure>
@@ -284,31 +285,23 @@
           <div>
             <p class="label label--accent">03 / Test method</p>
             <h2>How the test works</h2>
-            <p>Each test query starts from a real posting. Claude Sonnet reads it and writes a request a person
-              might type, with some of the posting's requirements and the kind of work, for example <code>mid-level
-              HR recruiter high-volume hiring $90,000+</code>. Claude Haiku checks every query. Sonnet skipped 38 of 396 postings
-              because their Himalayas labels contradict the description.</p>
-            <p>The judge reads the query, the listing details a job seeker sees on Himalayas and the description.
-              A good match meets every requirement the query states and offers the kind of work it asks for.</p>
-            <p>The assistant puts at least one good match in the top 10 for 94% of queries, against 67% for
-              semantic search alone. Its score stays near 0.80 for every query style and number of requirements,
-              while the other systems fall as requirements are added. Labels extracted from the posting text
-              recover about a quarter of the assistant's gain, because descriptions often leave out salary,
-              location and contract type.</p>
+            <p>Claude Sonnet writes each test query from a real posting, with some of its requirements and the kind
+              of work, for example <code>mid-level HR recruiter high-volume hiring $90,000+</code>. The judge grades
+              a job as a good match if it meets every requirement and offers the kind of work the query asks
+              for.</p>
+            <p>The assistant puts at least one good match in the top 10 for 94% of queries, compared with 67% for
+              semantic search alone. Its score stays near 0.80 as requirements are added, while the other systems
+              score lower.</p>
           </div>
           <div>
-            <p class="label label--accent">04 / Checking the judge</p>
-            <h2>How far the grades can be trusted</h2>
-            <p>No person checked the grades. Three tests with other LLM runs show how consistent they are. Claude
-              Sonnet regraded 300 pairs and gave the same grade 83% of the time, a weighted kappa of 0.87. Where
-              they differ, Sonnet is usually stricter, so the scores above are probably slightly high.</p>
-            <p>Without the listing details, the judge agrees with its own grades less (kappa 0.71): it often cannot
-              tell whether a location or salary requirement is met. Of 100 random query–job pairs, it graded 96 as
-              no match and none as a good match.</p>
-            <p class="note">The test queries are written by an LLM from real postings, so every query has at least
-              one match and borrows the posting's wording. Searches written by people, follow-up messages and the
-              written recommendations are not tested. Himalayas' labels contain errors, and the judge relies on
-              them where the description is silent.</p>
+            <p class="label label--accent">04 / Limitations</p>
+            <h2>What the test can't show</h2>
+            <p>The main limitation is that no people are involved. An LLM wrote the test queries, so they borrow
+              the postings' wording, and searches written by people are not tested. No person checked the grades
+              either. Claude Sonnet regraded a sample and gave the same grade 83% of the time, but it was usually
+              stricter, so the scores are probably slightly high.</p>
+            <p>A second limitation is that the judge relies on Himalayas' listing details. These contain errors,
+              and the assistant filters on the same labels, which may favour it.</p>
           </div>
         </div>
       </section>
