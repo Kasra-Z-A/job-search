@@ -62,6 +62,11 @@ function systemsChart(systems, width) {
     const demo = s.name === "filtered";
     const value = s["ndcg@10"];
     svg.append(svgEl("text", { class: `cat${demo ? " cat--demo" : ""}`, x: 0, y: y + 16 }, s.label));
+    // Above the end of the demo's bar; dropped in main() if it would overlap the label.
+    if (demo) {
+      svg.append(svgEl("text", { class: "ours", x: value * right, y: y + 16, "text-anchor": "end" },
+        "Current implementation"));
+    }
     const bar = svgEl("path", { class: `bar${demo ? " bar--demo" : ""}`, d: barPath(0, y + 23, value * right, barH),
       tabindex: 0, "aria-label": `${s.label}: ${score(value)}` });
     hover(bar, `${Math.round(s["good@10"] * 100)}% good matches`, s.label);
@@ -75,6 +80,9 @@ async function main() {
   const results = await (await fetch("results.json")).json();
   const systemsTarget = $("#chart-systems");
   systemsTarget.replaceChildren(systemsChart(results.systems, systemsTarget.clientWidth));
+  // Text widths are only known once drawn; the legend still says which system it is.
+  const ours = systemsTarget.querySelector(".ours"), cat = systemsTarget.querySelector(".cat--demo");
+  if (ours && cat && ours.getBBox().x < cat.getBBox().x + cat.getBBox().width + 16) ours.remove();
 }
 
 main();

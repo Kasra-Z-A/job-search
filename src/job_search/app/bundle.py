@@ -45,7 +45,7 @@ SYSTEMS = [
     ("hybrid", "Hybrid search (BM25 + embeddings)"),
     ("embeddings", "Semantic search (embeddings)"),
     ("textonly", "Filtered semantic search, labels extracted from text"),
-    ("filtered", "Filtered semantic search, Himalayas labels (this assistant)"),
+    ("filtered", "Filtered semantic search, Himalayas labels"),
 ]
 
 

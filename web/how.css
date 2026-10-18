@@ -203,24 +203,11 @@
 	stroke-width: 1.5;
 }
 
-.arch-bracket--open {
-	stroke: var(--muted);
-	stroke-dasharray: 4 3;
-}
-
-.arch-measured,
-.arch-unmeasured {
+.arch-measured {
 	font-family: "JetBrains Mono Variable", ui-monospace, monospace;
 	font-size: 10.5px;
 	letter-spacing: 0.1em;
-}
-
-.arch-measured {
 	fill: var(--rust);
-}
-
-.arch-unmeasured {
-	fill: var(--muted);
 }
 
 .arch figcaption {
@@ -334,6 +321,11 @@
 	font-variant-numeric: tabular-nums;
 }
 
+.chart .ours {
+	fill: var(--rust);
+	font-size: 13px;
+}
+
 .chart .tick {
 	fill: var(--muted);
 	font-family: "JetBrains Mono Variable", ui-monospace, monospace;
@@ -370,11 +362,18 @@
 	width: fit-content;
 }
 
-.legend dl {
+.legend__cols {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 1.25rem 4rem;
-	margin: 1rem 0 0;
+	margin-top: 1rem;
+}
+
+.legend dl {
+	display: grid;
+	align-content: start;
+	gap: 1.25rem;
+	margin: 0;
 }
 
 .legend dt {
@@ -390,7 +389,7 @@
 }
 
 @media (max-width: 760px) {
-	.legend dl {
+	.legend__cols {
 		grid-template-columns: 1fr;
 	}
 }

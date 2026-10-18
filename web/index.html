@@ -36,7 +36,7 @@
       <div id="scroller" class="scroller">
         <div class="column">
           <section id="intro" class="intro">
-            <p class="label label--accent">Project demo · 9,458 remote jobs · 13 Oct 2026</p>
+            <p class="label label--accent">Project demo · RAG · Semantic search</p>
             <h1>What job are you looking for?</h1>
             <p class="intro__lead">Describe it in your own words. I'll find matching postings, tell you which
               fit best and why, and you can refine as we go.</p>
@@ -93,11 +93,12 @@
             </defs>
 
             <!-- top lane: offline, once per snapshot -->
-            <text class="arch-lane" x="15" y="22">OFFLINE · ONCE PER SNAPSHOT</text>
+            <text class="arch-lane" x="15" y="22">OFFLINE · BUILT IN ADVANCE</text>
             <g>
-              <rect class="arch-card" x="15" y="76" width="150" height="48" rx="24"/>
-              <text class="arch-detail" x="90" y="96" text-anchor="middle">Himalayas API</text>
-              <text class="arch-detail" x="90" y="114" text-anchor="middle">10,000 postings</text>
+              <rect class="arch-card" x="15" y="62" width="150" height="76" rx="16"/>
+              <text class="arch-detail" x="90" y="86" text-anchor="middle">Download job</text>
+              <text class="arch-detail" x="90" y="104" text-anchor="middle">postings from the</text>
+              <text class="arch-detail" x="90" y="122" text-anchor="middle">Himalayas API</text>
             </g>
             <g>
               <rect class="arch-card" x="190" y="40" width="190" height="120" rx="8"/>
@@ -113,14 +114,14 @@
               <text class="arch-title" x="421" y="85">Embed</text>
               <text class="arch-detail" x="421" y="105">title + description</text>
               <text class="arch-detail" x="421" y="123">→ one vector per job</text>
-              <text class="arch-tool" x="421" y="147">text-embedding-3-small</text>
+              <text class="arch-tool" x="421" y="147">OpenAI text embeddings</text>
             </g>
 
             <!-- the index: one row per job, labels and vector side by side -->
             <g>
               <rect class="arch-store" x="620" y="40" width="405" height="120" rx="8"/>
               <text class="arch-title" x="636" y="64">Job index</text>
-              <text class="arch-detail" x="714" y="64">9,458 jobs, one row each</text>
+              <text class="arch-detail" x="714" y="64">one row per job</text>
               <text class="arch-kicker" x="636" y="86">LABELS</text>
               <text class="arch-kicker" x="896" y="86">VECTOR</text>
               <line class="arch-rule" x1="636" y1="94" x2="1009" y2="94"/>
@@ -166,30 +167,30 @@
               <text class="arch-title" x="421" y="285">Embed message</text>
               <text class="arch-detail" x="421" y="305">message → vector,</text>
               <text class="arch-detail" x="421" y="323">same model as the jobs</text>
-              <text class="arch-tool" x="421" y="347">text-embedding-3-small</text>
+              <text class="arch-tool" x="421" y="347">OpenAI text embeddings</text>
             </g>
             <g>
               <rect class="arch-card" x="620" y="240" width="190" height="120" rx="8"/>
               <text class="arch-num" x="636" y="262">03</text>
               <text class="arch-title" x="636" y="285">Filter on labels</text>
               <text class="arch-detail" x="636" y="305">drop jobs whose labels</text>
-              <text class="arch-detail" x="636" y="323">fail a filter</text>
-              <text class="arch-tool" x="636" y="347">9,458 → 42 jobs</text>
+              <text class="arch-detail" x="636" y="323">contradict the request</text>
+              <text class="arch-tool" x="636" y="347">rule-based, no LLM</text>
             </g>
             <g>
               <rect class="arch-card" x="835" y="240" width="190" height="120" rx="8"/>
               <text class="arch-num" x="851" y="262">04</text>
               <text class="arch-title" x="851" y="285">Rank by similarity</text>
-              <text class="arch-detail" x="851" y="305">sort the 42 by vector</text>
-              <text class="arch-detail" x="851" y="323">similarity, keep top 20</text>
-              <text class="arch-tool" x="851" y="347">full matches first</text>
+              <text class="arch-detail" x="851" y="305">sort by vector similarity</text>
+              <text class="arch-detail" x="851" y="323">to the message</text>
+              <text class="arch-tool" x="851" y="347">cosine similarity</text>
             </g>
             <g>
               <rect class="arch-card" x="1050" y="240" width="190" height="120" rx="8"/>
               <text class="arch-num" x="1066" y="262">05</text>
               <text class="arch-title" x="1066" y="285">Answer</text>
-              <text class="arch-detail" x="1066" y="305">reads 20 descriptions,</text>
-              <text class="arch-detail" x="1066" y="323">picks up to 6 jobs</text>
+              <text class="arch-detail" x="1066" y="305">reads the top results,</text>
+              <text class="arch-detail" x="1066" y="323">picks the best, says why</text>
               <text class="arch-tool" x="1066" y="347">Claude Haiku</text>
             </g>
             <g>
@@ -209,8 +210,6 @@
             <!-- what the evaluation covers -->
             <path class="arch-bracket" d="M190 374 V384 H1025 V374"/>
             <text class="arch-measured" x="607" y="406" text-anchor="middle">MEASURED IN SECTION 02</text>
-            <path class="arch-bracket arch-bracket--open" d="M1050 374 V384 H1240 V374"/>
-            <text class="arch-unmeasured" x="1145" y="406" text-anchor="middle">NOT YET MEASURED</text>
           </svg>
 
           <ol class="arch-list">
@@ -251,14 +250,15 @@
         </div>
         <p class="intro-text">Five search systems were tested on 309 test queries. For each query, an LLM judge
           (Claude Haiku) graded every job in each system's top 10 as a good match, a partial match or no match,
-          10,967 query–job pairs in total. Each bar shows the system's nDCG@10, a score from 0 to 1: 1 means the
-          best-graded jobs are ranked first, and 0 means none of the top 10 jobs match.</p>
+          10,967 query–job pairs in total. Each bar shows the system's nDCG@10 score. It is 1 when the
+          best-graded jobs are ranked first and 0 when none of the top 10 jobs match.</p>
 
         <figure class="figure">
           <div id="chart-systems" class="chart"></div>
           <details class="legend">
             <summary class="label">What the bars mean</summary>
-            <dl>
+            <div class="legend__cols">
+              <dl>
               <div><dt>Keyword search (BM25)</dt>
                 <dd>Ranks postings by the words they share with the query, with rare words weighted higher. It
                   misses synonyms and can't compare numbers, such as "at least $140k".</dd></div>
@@ -269,15 +269,18 @@
                 <dd>Ranks postings by how similar their embedding is to the query's embedding (OpenAI
                   text-embedding-3-small). It matches related wording but can't enforce seniority, location or
                   salary.</dd></div>
+              </dl>
+              <dl>
               <div><dt>Filtered semantic search, labels extracted from text</dt>
                 <dd>An LLM (Claude Haiku) extracts labels from the query: seniority, category, location, contract
                   type and minimum salary. The same LLM extracted these labels from each posting's text beforehand.
                   Postings whose labels contradict the query are removed, and the rest are ranked by embedding
                   similarity. Postings that don't state a label are kept and shown after the full matches.</dd></div>
-              <div class="legend__demo"><dt>Filtered semantic search, Himalayas labels (this assistant)</dt>
+              <div class="legend__demo"><dt>Filtered semantic search, Himalayas labels</dt>
                 <dd>Extracts the query labels the same way, but compares them with the labels Himalayas stores for
                   each posting. This is the system behind the search box above.</dd></div>
-            </dl>
+              </dl>
+            </div>
           </details>
         </figure>
 

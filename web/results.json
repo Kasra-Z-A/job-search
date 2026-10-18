@@ -33,7 +33,7 @@
   },
   {
    "name": "filtered",
-   "label": "Filtered semantic search, Himalayas labels (this assistant)",
+   "label": "Filtered semantic search, Himalayas labels",
    "ndcg@10": 0.8019,
    "good@10": 0.3492,
    "any_good@10": 0.9385
