@@ -152,13 +152,20 @@ measureTopbar();
 window.addEventListener("resize", measureTopbar);
 
 // Links to #chat and #how glide the page over SCROLL_MS. The browser's own
-// smooth scrolling is too quick to follow a full screen of movement.
+// smooth scrolling is too quick to follow a full screen of movement. The
+// target lands at the top of the screen, so the section before it is gone
+// from behind the see-through top bar, unless that would put its label or
+// heading under the bar's pill. Same rule as on kasra.page.
 const SCROLL_MS = 1400;
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
 function glideTo(target) {
   const from = window.scrollY;
-  const to = from + target.getBoundingClientRect().top - $(".topbar").offsetHeight;
+  const top = target.getBoundingClientRect().top;
+  const heading = target.querySelector(".label, h1, h2, h3");
+  const below = $(".topbar__pill").getBoundingClientRect().bottom + 6;
+  const clear = heading ? heading.getBoundingClientRect().top - top - below : 0;
+  const to = from + top + Math.min(0, clear);
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
     window.scrollTo({ top: to, behavior: "instant" });
     return;
