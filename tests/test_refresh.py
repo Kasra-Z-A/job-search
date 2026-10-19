@@ -160,7 +160,7 @@ def test_app_switches_bundles_when_the_pointer_moves(tmp_path):
             target.write(f"{store.PREFIX}{version}/{name}", version.encode())
     target.write(store.POINTER, json.dumps({"version": "v1"}).encode())
     now = [0.0]
-    app = App(lambda path: path.name, counter=None, target=target, cache=tmp_path / "cache",
+    app = App(lambda path, version: path.name, counter=None, target=target, cache=tmp_path / "cache",
               clock=lambda: now[0])
     assert app.current() == "v1"
 

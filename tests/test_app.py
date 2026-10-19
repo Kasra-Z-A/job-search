@@ -106,7 +106,7 @@ def test_first_message_retrieves_answers_and_grounds(tmp_path):
     assert out["more"][0]["meets"] == {"seniority": "yes", "country": "yes", "salary_min_usd": "unknown"}
     assert out["grounding"] == [] and out["search_text"] == "senior jobs canada 140k+"
     assert "text" not in out["picks"][0]
-    assert set(out["timing"]) == {"understand_ms", "retrieve_ms", "answer_ms"}
+    assert set(out["timing"]) == {"embed_ms", "understand_ms", "retrieve_ms", "answer_ms"}
 
 
 def test_followup_uses_history_and_can_require_salary(tmp_path):
@@ -242,3 +242,30 @@ def test_daily_counter_raises_other_errors():
 
     with pytest.raises(ClientError):
         DailyCounter(Broken(), 5).take("2026-10-15")
+
+
+def test_descriptions_are_read_on_demand_and_cached(tmp_path):
+    s = searcher(tmp_path, FakeAnthropic())
+    reads = []
+    inner = s.texts.read
+    s.texts.read = lambda ranges: reads.append(len(ranges)) or inner(ranges)
+    assert s.text_many(["close", "far"]) == ["Full text of close – ünïcode", "Full text of far – ünïcode"]
+    assert s.text_many(["far", "no-salary"])[1] == "Full text of no-salary – ünïcode"
+    assert reads == [2, 1]  # "far" came from memory the second time
+
+
+def test_s3_texts_reads_byte_ranges():
+    class FakeS3:
+        def __init__(self):
+            self.data, self.ranges = b"aaabbbbcc", []
+
+        def get_object(self, Bucket, Key, Range):
+            start, end = map(int, Range.removeprefix("bytes=").split("-"))
+            self.ranges.append(Range)
+            return {"Body": NS(read=lambda: self.data[start:end + 1])}
+
+    from job_search.app.search import S3Texts
+
+    s3 = FakeS3()
+    assert S3Texts(s3, "b", "k").read([(0, 3), (3, 7), (7, 9), (9, 9)]) == [b"aaa", b"bbbb", b"cc", b""]
+    assert s3.ranges == ["bytes=0-2", "bytes=3-6", "bytes=7-8"]

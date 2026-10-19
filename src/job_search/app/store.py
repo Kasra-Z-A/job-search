@@ -83,7 +83,7 @@ def current(store) -> dict | None:
     return json.loads(data) if data else None
 
 
-def fetch(store, version: str, dest: Path) -> Path:
+def fetch(store, version: str, dest: Path, files: list[str] = FILES) -> Path:
     """Download one bundle version into dest/<version>/, unless it is already there."""
     out = dest / version
     if (out / "values.json").exists():
@@ -91,7 +91,7 @@ def fetch(store, version: str, dest: Path) -> Path:
     partial = dest / f".{version}.partial"
     shutil.rmtree(partial, ignore_errors=True)
     partial.mkdir(parents=True)
-    for name in FILES:
+    for name in files:
         store.download(f"{PREFIX}{version}/{name}", partial / name)
     partial.rename(out)
     return out

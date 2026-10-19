@@ -16,10 +16,15 @@ caps searches per UTC day (DAILY_LIMIT); after that the API answers 429
 until midnight. API keys are read from SSM once per container.
 
 Jobs come from the bundle that `bundles/current.json` in BUNDLE_BUCKET points
-to (`job_search.app.store`), downloaded to /tmp on a cold start. A warm
-container rereads the pointer at most every POINTER_CHECK_SECONDS and loads
-the new bundle when the refresh job has moved it. Without BUNDLE_BUCKET the
-bundle is read from BUNDLE_DIR.
+to (`job_search.app.store`), downloaded to /tmp on a cold start, except the
+descriptions, which are read from S3 per search for the candidates only. A
+warm container rereads the pointer at most every POINTER_CHECK_SECONDS and
+loads the new bundle when the refresh job has moved it. Without BUNDLE_BUCKET
+the bundle is read from BUNDLE_DIR.
+
+EventBridge calls the function every few minutes with {"warmup": true}, so a
+container with the bundle loaded is usually ready, and a new bundle is loaded
+by that call rather than by a visitor's search.
 
 Environment: BUNDLE_BUCKET or BUNDLE_DIR, ANTHROPIC_KEY_PARAM,
 OPENAI_KEY_PARAM, DAILY_TABLE, DAILY_LIMIT.
@@ -37,6 +42,8 @@ from pathlib import Path
 
 DAY_SECONDS = 86_400
 POINTER_CHECK_SECONDS = 300
+# Everything but texts.bin, which is read per search (`search.S3Texts`).
+SEARCH_FILES = ["jobs.json.gz", "vectors.npy", "text_offsets.npy", "values.json"]
 BUNDLE_CACHE = Path("/tmp/bundles")
 _app = None
 
@@ -129,7 +136,7 @@ class App:
         self.make_searcher, self.counter, self.target = make_searcher, counter, target
         self.cache, self.clock = cache, clock
         self.version, self.checked = None, None
-        self.searcher = make_searcher(bundle_dir) if target is None else None
+        self.searcher = make_searcher(bundle_dir, None) if target is None else None
 
     def current(self):
         if self.target is None:
@@ -144,7 +151,8 @@ class App:
         if pointer is None:
             raise RuntimeError("no bundle published yet")
         if pointer["version"] != self.version:
-            self.searcher = self.make_searcher(store.fetch(self.target, pointer["version"], self.cache))
+            path = store.fetch(self.target, pointer["version"], self.cache, files=SEARCH_FILES)
+            self.searcher = self.make_searcher(path, pointer["version"])
             old, self.version = self.version, pointer["version"]
             if old:
                 import shutil
@@ -157,10 +165,11 @@ class App:
 def _setup() -> App:
     import anthropic
     import boto3
+    import botocore.config
     import openai
 
     from job_search.app import store
-    from job_search.app.search import Searcher
+    from job_search.app.search import S3Texts, Searcher
 
     ssm = boto3.client("ssm")
 
@@ -173,13 +182,24 @@ def _setup() -> App:
     table = boto3.resource("dynamodb").Table(os.environ["DAILY_TABLE"])
     counter = DailyCounter(table, int(os.environ.get("DAILY_LIMIT", "300")))
     bucket = os.environ.get("BUNDLE_BUCKET")
-    return App(lambda path: Searcher(path, anthropic_client, openai_client), counter,
-               target=store.S3Store(boto3.client("s3"), bucket) if bucket else None,
+    s3 = boto3.client("s3", config=botocore.config.Config(max_pool_connections=32))
+
+    def make_searcher(path, version):
+        texts = S3Texts(s3, bucket, f"{store.PREFIX}{version}/texts.bin") if version else None
+        return Searcher(path, anthropic_client, openai_client, texts=texts)
+
+    return App(make_searcher, counter,
+               target=store.S3Store(s3, bucket) if bucket else None,
                bundle_dir=None if bucket else Path(os.environ.get("BUNDLE_DIR", "bundle")))
 
 
 def lambda_handler(event, context):
     global _app
+    if event.get("warmup"):
+        if _app is None:
+            _app = _setup()
+        _app.current()
+        return {"warm": True, "bundle": _app.version}
     path = event.get("rawPath", "")
     if path.endswith("/api/health"):
         return response(200, {"ok": True})
