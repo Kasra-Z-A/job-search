@@ -18,10 +18,10 @@
 <body class="chat-page">
   <header class="topbar">
     <nav class="topbar__pill" aria-label="Main">
-      <a class="topbar__mark" href="https://kasra.page">Kasra Zarinehbaf Asadi <em>· Job search</em></a>
+      <a class="topbar__mark" href="https://kasra.page">Kasra<span class="topbar__surname"> Zarinehbaf Asadi</span> <em>· Job search</em></a>
       <span class="topbar__links">
         <button type="button" class="link-button" id="new-chat" hidden>New chat</button>
-        <a href="#chat">Search</a>
+        <a class="topbar__search" href="#chat">Search</a>
         <a href="#how">How it works</a>
         <button class="theme" type="button" data-theme-toggle aria-label="Switch colour theme">
           <span class="theme__dot" aria-hidden="true"></span>
@@ -214,10 +214,10 @@
 
           <ol class="arch-list">
             <li><span class="label label--accent">Offline</span><h3>Build the index</h3>
-              <p>10,000 postings are downloaded from the Himalayas API and non-English postings are removed. Each
-                remaining job gets one row with two parts: its labels (seniority, category, countries, contract type,
-                salary converted to US dollars) and a vector embedded from its title and description. The index holds
-                9,458 jobs.</p></li>
+              <p>Twice a day, recent postings are downloaded from the Himalayas API and non-English postings are
+                removed. Each remaining job gets one row with two parts: its labels (seniority, category, countries,
+                contract type, salary converted to US dollars) and a vector embedded from its title and
+                description.</p></li>
             <li><span class="label label--accent">01 · Understand</span><h3>Convert the request into filters</h3>
               <p>Claude Haiku reads the message for seniority, job category, eligible countries, contract type and
                 minimum salary. It can only pick values that exist in the labels, so it cannot ask for a category no job
@@ -226,8 +226,7 @@
               <p>The message is turned into a vector with the same model used for the jobs, so the two can be
                 compared directly.</p></li>
             <li><span class="label label--accent">03 · Filter</span><h3>Filter on labels</h3>
-              <p>Each job's labels are checked against the filters, and every job that fails one is dropped. For the
-                example search, 42 of 9,458 jobs are left.</p></li>
+              <p>Each job's labels are checked against the filters, and every job that fails one is dropped.</p></li>
             <li><span class="label label--accent">04 · Rank</span><h3>Rank by similarity</h3>
               <p>The remaining jobs are ordered by how close their vector is to the message's. Jobs that meet every
                 filter come first. Jobs that leave a label empty, such as a posting with no salary, might still match,

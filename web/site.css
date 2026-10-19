@@ -246,6 +246,7 @@ a {
 	align-items: center;
 	gap: 1.5rem;
 	font-size: var(--step-small);
+	white-space: nowrap;
 }
 
 .topbar__links a,
@@ -316,6 +317,15 @@ a {
 	}
 
 	.topbar__mark em {
+		display: none;
+	}
+}
+
+/* Phones: the first name and the in-page links only, so the bar stays on one
+   line even with "New chat" showing. Search is the top of the page anyway. */
+@media (max-width: 480px) {
+	.topbar__surname,
+	.topbar__search {
 		display: none;
 	}
 }

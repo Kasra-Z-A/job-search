@@ -195,9 +195,11 @@ function scrollToEnd() {
 function updateComposer() {
   const input = $("#q");
   $("#composer .send").disabled = busy || input.value.trim().length < 3;
+  // Shorter on phones, where the long version wraps inside the box.
+  const narrow = matchMedia("(max-width: 480px)").matches;
   input.placeholder = turns.length
-    ? "Refine it: only full-time, Canada instead…"
-    : "Describe the job you're looking for…";
+    ? narrow ? "Refine your search…" : "Refine it: only full-time, Canada instead…"
+    : narrow ? "Describe the job you want…" : "Describe the job you're looking for…";
 }
 
 function autosize() {

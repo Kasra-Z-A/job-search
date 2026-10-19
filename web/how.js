@@ -49,7 +49,7 @@ function barPath(x, y, width, height, r = 4) {
 
 // Drawn at the container's width, so labels stay at their set size.
 function systemsChart(systems, width) {
-  const W = Math.max(width, 320), right = W - 56, row = 50, barH = 20;
+  const W = Math.max(width, 280), right = W - 56, row = 50, barH = 20;
   const H = systems.length * row + 26;
   const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "nDCG at 10 by search system" });
   for (const t of [0, 0.25, 0.5, 0.75, 1]) {

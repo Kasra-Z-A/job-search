@@ -94,8 +94,8 @@
 }
 
 /* --- architecture diagram ------------------------------------------------
-   Drawn from the site's tokens, so it follows the theme toggle. The list is
-   the narrow-screen version and what screen readers get at every width. */
+   Drawn from the site's tokens, so it follows the theme toggle. The drawing
+   is aria-hidden; the list is what screen readers get. */
 
 .arch {
 	margin: 2rem 0 0;
@@ -229,51 +229,12 @@
 	padding: 0;
 }
 
-.arch-list h3 {
-	font-family: "Inter Variable", system-ui, sans-serif;
-	font-size: 1rem;
-	font-weight: 600;
-	letter-spacing: 0;
-	margin: 0.2rem 0 0.3rem;
-}
-
-.arch-list p {
-	color: var(--ink-soft);
-	font-size: 0.95rem;
-}
-
+/* On phones the drawing is scaled down whole rather than rebuilt, so it
+   keeps its shape; the panel padding shrinks to give it the full width. */
 @media (max-width: 760px) {
-	.arch-svg {
-		display: none;
-	}
-
-	.arch-list {
-		position: static;
-		width: auto;
-		height: auto;
-		overflow: visible;
-		clip-path: none;
-		white-space: normal;
-		display: grid;
-		gap: 1.4rem;
-	}
-
-	/* A rail with a dot per step, so the list still reads as one run. */
-	.arch-list li {
-		position: relative;
-		padding-left: 1.4rem;
-		border-left: 1.5px solid var(--rust);
-	}
-
-	.arch-list li::before {
-		content: "";
-		position: absolute;
-		left: -5px;
-		top: 0.3rem;
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--rust);
+	.arch {
+		padding: 0.6rem;
+		border-radius: 0.75rem;
 	}
 }
 
@@ -324,6 +285,16 @@
 .chart .ours {
 	fill: var(--rust);
 	font-size: 13px;
+}
+
+@media (max-width: 640px) {
+	.figure {
+		padding: 0.9rem;
+	}
+
+	.chart .cat {
+		font-size: 12px;
+	}
 }
 
 .chart .tick {
