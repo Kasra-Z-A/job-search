@@ -62,8 +62,8 @@ All systems return a ranking of up to 100 job IDs per query.
 candidates (fields, which requirements they meet, the start of each description)
 and returns a short summary and up to six picks with reasons. The model returns job
 numbers, not job text: the page renders the cards from the data, picks outside the
-candidates are dropped, and a reason that mentions a dollar amount not in the data
-is replaced. If the call fails, the ranking is shown instead.
+candidates are dropped, and a summary or reason that mentions a dollar amount not
+in the data is replaced. If the call fails, the ranking is shown instead.
 
 **Follow-ups.** Later messages go to a separate prompt that gets the earlier turns
 and returns the full updated filters plus a standalone search sentence for the
