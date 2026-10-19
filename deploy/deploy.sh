@@ -4,13 +4,13 @@
 # cache. Infrastructure comes from the aws-infra repo's jobs-site stack; the
 # jobs themselves come from the refresh job, not from deploys.
 #
-#   AWS_PROFILE=admin deploy/deploy.sh <account>.dkr.ecr.eu-central-1.amazonaws.com/job-search@sha256:...
+#   AWS_PROFILE=admin deploy/deploy.sh sha256:...
 #   AWS_PROFILE=admin deploy/deploy.sh --web-only   # page only
 #
 # CI prints the digest in the run summary. Rolling back is deploying an older one.
 set -euo pipefail
 
-image="${1:?image digest from CI, or --web-only}"
+digest="${1:?image digest from CI, or --web-only}"
 root="$(cd "$(dirname "$0")/.." && pwd)"
 region="eu-central-1"
 account="$(aws sts get-caller-identity --query Account --output text)"
@@ -18,11 +18,12 @@ site_bucket="jobs-kasra-page-$account"
 distribution="$(aws cloudfront list-distributions \
   --query "DistributionList.Items[?contains(Aliases.Items, 'jobs.kasra.page')].Id" --output text)"
 
-if [ "$image" != "--web-only" ]; then
-  case "$image" in
-    *@sha256:*) ;;
-    *) echo "pin a digest (…@sha256:…), not a tag: $image" >&2; exit 1 ;;
+if [ "$digest" != "--web-only" ]; then
+  case "$digest" in
+    sha256:*) ;;
+    *) echo "pass the digest CI printed (sha256:…), not a tag: $digest" >&2; exit 1 ;;
   esac
+  image="$account.dkr.ecr.$region.amazonaws.com/job-search@$digest"
   for function in job-search job-search-refresh; do
     aws lambda update-function-code --region "$region" --function-name "$function" \
       --image-uri "$image" --query LastUpdateStatus --output text

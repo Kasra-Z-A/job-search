@@ -76,7 +76,7 @@ and the refresh job and pushes it to ECR. The infrastructure is defined in a
 separate Terraform repository.
 
 ```sh
-deploy/deploy.sh <ecr-image@sha256:...>   # digest from the CI run summary
+deploy/deploy.sh sha256:...               # digest from the CI run summary
 deploy/deploy.sh --web-only               # page changes only
 ```
 

@@ -36,15 +36,22 @@ jobs:
       id-token: write # GitHub OIDC token for the AWS push role
     env:
       # Inert until the aws-infra jobs-site registry exists and these
-      # repository variables are set, so earlier pushes only run tests.
-      READY: ${{ vars.AWS_IMAGE_PUSH_ROLE_ARN != '' && vars.ECR_REPOSITORY != '' }}
+      # repository secrets are set, so earlier pushes only run tests.
+      READY: ${{ secrets.AWS_IMAGE_PUSH_ROLE_ARN != '' && secrets.ECR_REPOSITORY != '' }}
     steps:
       - uses: actions/checkout@v7
+
+      # The role and registry are secrets so the logs show neither. The account
+      # ID also appears on its own (registry host, push output); mask it too.
+      - if: env.READY == 'true'
+        env:
+          REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        run: echo "::add-mask::${REPOSITORY%%.*}"
 
       - if: env.READY == 'true'
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ vars.AWS_IMAGE_PUSH_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_IMAGE_PUSH_ROLE_ARN }}
           aws-region: eu-central-1
 
       - if: env.READY == 'true'
@@ -54,12 +61,15 @@ jobs:
       # single-platform Docker image, not a multi-arch index or attestations.
       - name: Build and push the image
         if: env.READY == 'true'
+        env:
+          REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
-          image="${{ vars.ECR_REPOSITORY }}:${{ github.sha }}"
+          image="$REPOSITORY:${{ github.sha }}"
           docker buildx build --platform linux/amd64 --provenance=false --sbom=false \
             --output type=docker -t "$image" .
           docker push "$image"
           digest=$(docker inspect --format='{{index .RepoDigests 0}}' "$image")
+          digest=${digest#*@}
           echo "Pushed $digest"
           {
             echo "### Image published"
@@ -68,8 +78,8 @@ jobs:
             echo "$digest"
             echo '```'
             echo
-            echo "Deploy it with: AWS_PROFILE=admin deploy/deploy.sh $digest"
+            echo "Deploy it with: deploy/deploy.sh $digest"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - if: env.READY != 'true'
-        run: echo "ECR variables are not set yet; skipping the image build."
+        run: echo "ECR secrets are not set yet; skipping the image build."
