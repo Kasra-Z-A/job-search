@@ -145,10 +145,9 @@ are added.
 ### Limitations
 
 - The queries are LLM-written. 40 deliberately sloppy queries (typos,
-  abbreviations) parsed 39 of 40 correctly, but no set of human-written queries has
-  been tested yet; `job_search.human` produces the worksheet for one.
+  abbreviations) parsed 39 of 40 correctly, but no human-written queries were
+  tested.
 - There is no hand-graded subset; agreement is measured between models only.
-  `judge worksheet` and `judge agree` support adding one.
 - The judge sees Himalayas' listing details, the same labels `filtered` uses, which
   may favour it on requirement checks.
 

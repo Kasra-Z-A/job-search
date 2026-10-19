@@ -80,11 +80,5 @@ deploy/deploy.sh sha256:...               # digest from the CI run summary
 deploy/deploy.sh --web-only               # page changes only
 ```
 
-## Roadmap
-
-- Test with human-written queries, not only LLM-written ones.
-- Hand-grade a subset of pairs to check the judge against people.
-- Rank postings that do not state a required field lower, or show them separately.
-
 Job data from [Himalayas](https://himalayas.app); every result links to the
 original posting.
