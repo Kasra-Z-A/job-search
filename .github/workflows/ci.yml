@@ -1,0 +1,75 @@
+name: checks
+
+# Tests run on every push and pull request. Pushes to main also build the
+# Lambda image once and push it to ECR, so what runs on jobs.kasra.page is the
+# image CI tested. deploy/deploy.sh points both functions at its digest.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v6
+      - run: uv python install 3.12
+      - run: uv sync --locked --python 3.12
+      - run: uv run pytest -q
+
+  image:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      id-token: write # GitHub OIDC token for the AWS push role
+    env:
+      # Inert until the aws-infra jobs-site registry exists and these
+      # repository variables are set, so earlier pushes only run tests.
+      READY: ${{ vars.AWS_IMAGE_PUSH_ROLE_ARN != '' && vars.ECR_REPOSITORY != '' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - if: env.READY == 'true'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_IMAGE_PUSH_ROLE_ARN }}
+          aws-region: eu-central-1
+
+      - if: env.READY == 'true'
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Tagged by commit so a tag always identifies its source. Lambda needs a
+      # single-platform Docker image, not a multi-arch index or attestations.
+      - name: Build and push the image
+        if: env.READY == 'true'
+        run: |
+          image="${{ vars.ECR_REPOSITORY }}:${{ github.sha }}"
+          docker buildx build --platform linux/amd64 --provenance=false --sbom=false \
+            --output type=docker -t "$image" .
+          docker push "$image"
+          digest=$(docker inspect --format='{{index .RepoDigests 0}}' "$image")
+          echo "Pushed $digest"
+          {
+            echo "### Image published"
+            echo
+            echo '```'
+            echo "$digest"
+            echo '```'
+            echo
+            echo "Deploy it with: AWS_PROFILE=admin deploy/deploy.sh $digest"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - if: env.READY != 'true'
+        run: echo "ECR variables are not set yet; skipping the image build."

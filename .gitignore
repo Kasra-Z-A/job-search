@@ -16,3 +16,4 @@ data/embeddings/
 data/extracted/.*
 data/app/
 build/
+data/live/

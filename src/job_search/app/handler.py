@@ -15,8 +15,14 @@ embedding). A DynamoDB counter
 caps searches per UTC day (DAILY_LIMIT); after that the API answers 429
 until midnight. API keys are read from SSM once per container.
 
-Environment: BUNDLE_DIR, ANTHROPIC_KEY_PARAM, OPENAI_KEY_PARAM, DAILY_TABLE,
-DAILY_LIMIT.
+Jobs come from the bundle that `bundles/current.json` in BUNDLE_BUCKET points
+to (`job_search.app.store`), downloaded to /tmp on a cold start. A warm
+container rereads the pointer at most every POINTER_CHECK_SECONDS and loads
+the new bundle when the refresh job has moved it. Without BUNDLE_BUCKET the
+bundle is read from BUNDLE_DIR.
+
+Environment: BUNDLE_BUCKET or BUNDLE_DIR, ANTHROPIC_KEY_PARAM,
+OPENAI_KEY_PARAM, DAILY_TABLE, DAILY_LIMIT.
 """
 
 from __future__ import annotations
@@ -30,7 +36,9 @@ import time
 from pathlib import Path
 
 DAY_SECONDS = 86_400
-_searcher = None
+POINTER_CHECK_SECONDS = 300
+BUNDLE_CACHE = Path("/tmp/bundles")
+_app = None
 
 
 def response(status: int, body: dict, cache: bool = False) -> dict:
@@ -113,11 +121,45 @@ def handle(params: dict, searcher, counter, followup: bool = False) -> dict:
         return response(502, {"error": "upstream", "message": "Search is unavailable right now."})
 
 
-def _setup():
+class App:
+    """One container's searcher, swapped for a new one when the bundle changes."""
+
+    def __init__(self, make_searcher, counter, target=None, bundle_dir: Path | None = None,
+                 cache: Path = BUNDLE_CACHE, clock=time.monotonic):
+        self.make_searcher, self.counter, self.target = make_searcher, counter, target
+        self.cache, self.clock = cache, clock
+        self.version, self.checked = None, None
+        self.searcher = make_searcher(bundle_dir) if target is None else None
+
+    def current(self):
+        if self.target is None:
+            return self.searcher
+        now = self.clock()
+        if self.searcher is not None and now - self.checked < POINTER_CHECK_SECONDS:
+            return self.searcher
+        from job_search.app import store
+
+        self.checked = now
+        pointer = store.current(self.target)
+        if pointer is None:
+            raise RuntimeError("no bundle published yet")
+        if pointer["version"] != self.version:
+            self.searcher = self.make_searcher(store.fetch(self.target, pointer["version"], self.cache))
+            old, self.version = self.version, pointer["version"]
+            if old:
+                import shutil
+
+                shutil.rmtree(self.cache / old, ignore_errors=True)
+            print(f"loaded bundle {self.version}")
+        return self.searcher
+
+
+def _setup() -> App:
     import anthropic
     import boto3
     import openai
 
+    from job_search.app import store
     from job_search.app.search import Searcher
 
     ssm = boto3.client("ssm")
@@ -125,25 +167,25 @@ def _setup():
     def secret(name):
         return ssm.get_parameter(Name=os.environ[name], WithDecryption=True)["Parameter"]["Value"]
 
-    searcher = Searcher(
-        Path(os.environ.get("BUNDLE_DIR", "bundle")),
-        # Bounded so a slow upstream fails within CloudFront's 30 s origin timeout.
-        anthropic.Anthropic(api_key=secret("ANTHROPIC_KEY_PARAM"), max_retries=1, timeout=8),
-        openai.OpenAI(api_key=secret("OPENAI_KEY_PARAM"), max_retries=1, timeout=5),
-    )
+    # Bounded so a slow upstream fails within CloudFront's 30 s origin timeout.
+    anthropic_client = anthropic.Anthropic(api_key=secret("ANTHROPIC_KEY_PARAM"), max_retries=1, timeout=8)
+    openai_client = openai.OpenAI(api_key=secret("OPENAI_KEY_PARAM"), max_retries=1, timeout=5)
     table = boto3.resource("dynamodb").Table(os.environ["DAILY_TABLE"])
-    return searcher, DailyCounter(table, int(os.environ.get("DAILY_LIMIT", "300")))
+    counter = DailyCounter(table, int(os.environ.get("DAILY_LIMIT", "300")))
+    bucket = os.environ.get("BUNDLE_BUCKET")
+    return App(lambda path: Searcher(path, anthropic_client, openai_client), counter,
+               target=store.S3Store(boto3.client("s3"), bucket) if bucket else None,
+               bundle_dir=None if bucket else Path(os.environ.get("BUNDLE_DIR", "bundle")))
 
 
 def lambda_handler(event, context):
-    global _searcher
+    global _app
     path = event.get("rawPath", "")
     if path.endswith("/api/health"):
         return response(200, {"ok": True})
     if not path.endswith(("/api/search", "/api/followup")):
         return response(404, {"error": "not_found"})
-    if _searcher is None:
-        _searcher = _setup()
-    searcher, counter = _searcher
-    return handle(event.get("queryStringParameters") or {}, searcher, counter,
+    if _app is None:
+        _app = _setup()
+    return handle(event.get("queryStringParameters") or {}, _app.current(), _app.counter,
                   followup=path.endswith("/api/followup"))

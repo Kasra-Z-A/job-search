@@ -1,6 +1,7 @@
 """Pack a snapshot for the demo backend, and the evaluation results for the page.
 
-Writes `data/app/<date>/` (gitignored, shipped inside the Lambda package):
+Writes `data/app/<date>/` (gitignored; for the local devserver, while the live
+site serves a rolling window built the same way by `job_search.refresh`):
 
 - jobs.json.gz: the fields search and display need, plus a short excerpt;
 - texts.bin and text_offsets.npy: the full descriptions, concatenated, and
@@ -34,7 +35,7 @@ from job_search.systems.parse import field_values
 APP_DIR = Path("data/app")
 WEB_RESULTS = Path("web/results.json")
 EXCERPT_CHARS = 280
-KEEP = ["id", "title", "company", "published_at", "seniority", "categories", "countries", "worldwide",
+KEEP = ["id", "title", "company", "published_at", "expires_at", "seniority", "categories", "countries", "worldwide",
         "employment_type", "salary_status", "salary_min_usd", "salary_max_usd"]
 JUDGED_SET = "topical-v2"
 # Systems shown on the page, in order, with the label a visitor reads. Scores
@@ -73,26 +74,43 @@ def results_summary(date: str, results_dir: Path = Path("data/results")) -> dict
     }
 
 
+def write(out: Path, jobs: list[dict], texts: list[str], vectors: np.ndarray, values: dict) -> Path:
+    """Write one bundle: slim jobs, their descriptions and float16 vectors, in the same order."""
+    if not len(jobs) == len(texts) == len(vectors):
+        raise ValueError("jobs, texts and vectors differ in length")
+    out.mkdir(parents=True, exist_ok=True)
+    with gzip.open(out / "jobs.json.gz", "wt", encoding="utf-8") as f:
+        json.dump(jobs, f, ensure_ascii=False)
+    np.save(out / "vectors.npy", np.asarray(vectors).astype(np.float16))
+    encoded = [t.encode("utf-8") for t in texts]
+    (out / "texts.bin").write_bytes(b"".join(encoded))
+    np.save(out / "text_offsets.npy", np.cumsum([0, *map(len, encoded)], dtype=np.int64))
+    categories, countries, employment_types = field_values(jobs)
+    (out / "values.json").write_text(json.dumps({
+        **values, "embedding_model": EMBEDDING_MODEL, "jobs": len(jobs), "categories": categories,
+        "countries": countries, "employment_types": employment_types}, indent=1))
+    return out
+
+
+def read(bundle_dir: Path) -> tuple[list[dict], list[str], np.ndarray, dict]:
+    """A bundle's jobs, descriptions, vectors and values, as `write` stored them."""
+    with gzip.open(bundle_dir / "jobs.json.gz", "rt", encoding="utf-8") as f:
+        jobs = json.load(f)
+    blob = (bundle_dir / "texts.bin").read_bytes()
+    offsets = np.load(bundle_dir / "text_offsets.npy")
+    texts = [blob[offsets[i]:offsets[i + 1]].decode("utf-8") for i in range(len(jobs))]
+    values = json.loads((bundle_dir / "values.json").read_text())
+    return jobs, texts, np.load(bundle_dir / "vectors.npy"), values
+
+
 def build(normalised: Path, app_dir: Path = APP_DIR) -> Path:
     date = snapshot_date(normalised)
     jobs = load_jobs(normalised)
     cached = np.load(CACHE_DIR / f"{EMBEDDING_MODEL}-jobs-{date}.npz", allow_pickle=False)
     if cached["ids"].tolist() != [j["id"] for j in jobs]:
         raise ValueError("embedding cache does not match the snapshot")
-
-    out = app_dir / date
-    out.mkdir(parents=True, exist_ok=True)
-    with gzip.open(out / "jobs.json.gz", "wt", encoding="utf-8") as f:
-        json.dump([slim(j) for j in jobs], f, ensure_ascii=False)
-    np.save(out / "vectors.npy", cached["vectors"].astype(np.float16))
-    encoded = [j["text"].encode("utf-8") for j in jobs]
-    (out / "texts.bin").write_bytes(b"".join(encoded))
-    np.save(out / "text_offsets.npy", np.cumsum([0, *map(len, encoded)], dtype=np.int64))
-    categories, countries, employment_types = field_values(jobs)
-    (out / "values.json").write_text(json.dumps({
-        "snapshot": date, "embedding_model": EMBEDDING_MODEL, "categories": categories,
-        "countries": countries, "employment_types": employment_types}, indent=1))
-    return out
+    return write(app_dir / date, [slim(j) for j in jobs], [j["text"] for j in jobs], cached["vectors"],
+                 {"snapshot": date})
 
 
 def main(argv: list[str] | None = None) -> None:

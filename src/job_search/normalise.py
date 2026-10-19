@@ -78,6 +78,24 @@ def fetch_ecb_rates(date: str, client: httpx.Client) -> dict[str, float]:
     return {"EUR": 1.0, **dict(sorted(rates.items()))}
 
 
+def fetch_latest_ecb_rates(date: str, client: httpx.Client, lookback_days: int = 10) -> tuple[str, dict[str, float]]:
+    """The most recent ECB reference rates on or before `date`, and their day.
+
+    The ECB publishes no rates on weekends and holidays, so the live refresh
+    takes the last published day instead of failing.
+    """
+    start = (dt.date.fromisoformat(date) - dt.timedelta(days=lookback_days)).isoformat()
+    response = client.get(ECB_URL, params={"startPeriod": start, "endPeriod": date, "format": "csvdata"})
+    response.raise_for_status()
+    rows = [row for row in csv.DictReader(io.StringIO(response.text)) if row["OBS_VALUE"]]
+    days = sorted({row["TIME_PERIOD"] for row in rows if row["CURRENCY"] == "USD"})
+    if not days:
+        raise ValueError(f"no ECB rates in the {lookback_days} days before {date}")
+    day = days[-1]
+    rates = {row["CURRENCY"]: float(row["OBS_VALUE"]) for row in rows if row["TIME_PERIOD"] == day}
+    return day, {"EUR": 1.0, **dict(sorted(rates.items()))}
+
+
 def load_or_fetch_rates(date: str, fx_dir: Path = FX_DIR) -> dict[str, float]:
     path = fx_path(date, fx_dir)
     if path.exists():

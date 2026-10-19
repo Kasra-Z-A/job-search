@@ -14,6 +14,7 @@ from job_search.app.search import Searcher, explain, understood_list
 
 def job(id, **overrides):
     base = {"id": id, "title": f"Job {id}", "company": "Acme", "published_at": "2026-10-13T00:00:00+00:00",
+            "expires_at": "2026-12-12T00:00:00+00:00",
             "seniority": ["Senior"], "categories": ["Developer"], "countries": ["Canada"], "worldwide": False,
             "employment_type": "Full Time", "salary_status": "stated", "salary_min_usd": 100_000,
             "salary_max_usd": 150_000, "excerpt": "..."}
