@@ -199,6 +199,23 @@ function scrollToEnd() {
   scroller.scrollTop = scroller.scrollHeight;
 }
 
+// On a phone the keyboard pushes the whole page up while typing. Sending closes
+// it and brings the chat back under the top bar, once the keyboard has gone
+// (visualViewport resizes) or after a short wait where it doesn't report that.
+const touch = matchMedia("(pointer: coarse)").matches;
+
+function settleChat() {
+  if (!touch) return;
+  $("#q").blur();
+  const align = () => {
+    const to = window.scrollY + $("#chat").getBoundingClientRect().top - $(".topbar").offsetHeight;
+    window.scrollTo({ top: Math.max(to, 0), behavior: "instant" });
+  };
+  align();
+  window.visualViewport?.addEventListener("resize", align, { once: true });
+  setTimeout(align, 400);
+}
+
 function updateComposer() {
   const input = $("#q");
   $("#composer .send").disabled = busy || input.value.trim().length < 3;
@@ -228,6 +245,7 @@ async function send(message) {
   $("#q").value = "";
   autosize();
   updateComposer();
+  settleChat();
   scrollToEnd();
 
   let stage = 0;
@@ -254,7 +272,8 @@ async function send(message) {
     clearInterval(timer);
     busy = false;
     updateComposer();
-    $("#q").focus();
+    // Refocusing on a phone would bring the keyboard back over the reply.
+    if (!touch) $("#q").focus();
   }
 }
 
