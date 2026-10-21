@@ -78,22 +78,23 @@
             <h2 id="arch-title">How the job search works</h2>
           </div>
         </div>
-        <p class="intro-text">Every posting on Himalayas comes with labels for seniority, category, eligible
+        <p class="intro-text">Twice a day, new postings are downloaded from Himalayas and added to the index, and older
+          ones drop out, so the search only covers recent jobs. Every posting on Himalayas comes with labels for seniority, category, eligible
           countries, contract type and salary. The labels are stored alongside the embeddings of the job description
           for later retrieval. Claude Haiku extracts the labels from the user message, and filters on these labels
           remove the jobs that don't qualify. The remaining jobs are ranked by how similar their description is to
           the message.</p>
 
         <figure class="arch">
-          <svg class="arch-svg" viewBox="0 0 1430 420" aria-hidden="true" focusable="false">
+          <svg class="arch-svg" viewBox="0 -14 1430 434" aria-hidden="true" focusable="false">
             <defs>
               <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                 <path class="arch-head" d="M0 0 L10 5 L0 10 Z"/>
               </marker>
             </defs>
 
-            <!-- top lane: offline, once per snapshot -->
-            <text class="arch-lane" x="15" y="22">OFFLINE · BUILT IN ADVANCE</text>
+            <!-- top lane: offline, rebuilt on a schedule -->
+            <text class="arch-lane" x="15" y="0">OFFLINE · REBUILT TWICE A DAY</text>
             <g>
               <rect class="arch-card" x="15" y="62" width="150" height="76" rx="16"/>
               <text class="arch-detail" x="90" y="86" text-anchor="middle">Download job</text>
@@ -136,6 +137,11 @@
             <line class="arch-track" x1="169" y1="100" x2="186" y2="100" marker-end="url(#arch-arrow)"/>
             <line class="arch-track" x1="384" y1="100" x2="401" y2="100" marker-end="url(#arch-arrow)"/>
             <line class="arch-track" x1="599" y1="100" x2="616" y2="100" marker-end="url(#arch-arrow)"/>
+
+            <!-- the refresh: the index loops back to the download -->
+            <path class="arch-track arch-track--loop" d="M1029 100 H1070 Q1080 100 1080 90 V28 Q1080 18 1070 18 H100 Q90 18 90 28 V56" marker-end="url(#arch-arrow)"/>
+            <text class="arch-edge" x="1094" y="55">new postings in,</text>
+            <text class="arch-edge" x="1094" y="73">old ones out</text>
 
             <!-- each column feeds the step below it -->
             <line class="arch-track arch-track--feed" x1="715" y1="164" x2="715" y2="236" marker-end="url(#arch-arrow)"/>
@@ -214,8 +220,8 @@
 
           <ol class="arch-list">
             <li><span class="label label--accent">Offline</span><h3>Build the index</h3>
-              <p>Twice a day, recent postings are downloaded from the Himalayas API and non-English postings are
-                removed. Each remaining job gets one row with two parts: its labels (seniority, category, countries,
+              <p>Twice a day, recent postings are downloaded from the Himalayas API, non-English postings are
+                removed and older postings drop out. Each remaining job gets one row with two parts: its labels (seniority, category, countries,
                 contract type, salary converted to US dollars) and a vector embedded from its title and
                 description.</p></li>
             <li><span class="label label--accent">01 · Understand</span><h3>Convert the request into filters</h3>

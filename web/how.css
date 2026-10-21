@@ -175,6 +175,13 @@
 	stroke-dasharray: 4 3;
 }
 
+/* The refresh loop: finer dashes than the feeds, so it reads as a repeat,
+   not as data moving between steps. */
+.arch-track--loop {
+	stroke-dasharray: 2 4;
+	stroke-opacity: 0.7;
+}
+
 .arch-head {
 	fill: var(--rust);
 }
