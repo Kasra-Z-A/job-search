@@ -168,7 +168,10 @@ of the frozen snapshot. The live window is never scored.
   descriptions from S3 by byte range for the 20 candidates only. Answers are
   cached per query; uncached searches are capped per day.
 - **One image:** CI tests the code and builds one container image for both
-  functions, pushed to ECR; `deploy/deploy.sh` points them at a digest.
+  functions, pushed to ECR; `deploy/deploy.sh` points them at a digest and
+  tags that image `deployed-<time>`. The registry's lifecycle policy keeps the
+  three most recently deployed images, so neither age nor new pushes can
+  expire the one the functions run.
 
 The page (`web/`) is plain HTML, CSS and JavaScript with no build step, in the
 same design as kasra.page.
